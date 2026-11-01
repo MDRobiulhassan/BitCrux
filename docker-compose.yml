@@ -1,0 +1,10 @@
+services:
+  bitcrux-postgres:
+    image: postgres:17
+    container_name: bitcrux-db
+    environment:
+      POSTGRES_USER: bitcrux
+      POSTGRES_PASSWORD: ""
+      POSTGRES_DB: bitcrux
+    ports:
+      - "5432:5432"
