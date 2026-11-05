@@ -33,18 +33,23 @@ export const onBoardUser = async () => {
 export const currentUserRole = async () => {
   try {
     const user = await currentUser();
+
     if (!user) {
-      return { success: false, error: "No Authenticated User found" };
+      return { success: false as const, role: null };
     }
 
-    const { id } = user;
     const userRole = await prisma.user.findUnique({
-      where: { clerkId: id },
+      where: { clerkId: user.id },
       select: { role: true },
     });
 
-    return { success: true, role: userRole?.role || null };
-  } catch (error) {}
+    return {
+      success: true as const,
+      role: userRole?.role ?? null,
+    };
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+
+    return { success: false as const, role: null };
+  }
 };
-
-
