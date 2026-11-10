@@ -38,7 +38,7 @@ model Problem {
   difficulty  Difficulty
   tags        String[]
   examples    Json
-  constraints  String
+  constraints String
   hints       String?
   editorial   String?
 
