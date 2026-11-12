@@ -1,0 +1,147 @@
+"use client";
+
+import { Plus, Trash2, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import type {
+  FieldErrors,
+  UseFormRegister,
+  UseFormReturn,
+} from "react-hook-form";
+import type { ProblemFormValues } from "@/modules/problems/schema";
+
+interface TestCasesSectionProps {
+  form: UseFormReturn<ProblemFormValues>;
+  testCasesArray: {
+    fields: { id: string }[];
+    append: (value: { input: string; output: string }) => void;
+    remove: (index: number) => void;
+  };
+}
+
+interface TestCaseCardProps {
+  index: number;
+  register: UseFormRegister<ProblemFormValues>;
+  errors: FieldErrors<ProblemFormValues>;
+  onRemove: () => void;
+  canRemove: boolean;
+}
+
+export function TestCasesSection({
+  form,
+  testCasesArray,
+}: TestCasesSectionProps) {
+  const {
+    register,
+    formState: { errors },
+  } = form;
+
+  const { fields, append, remove } = testCasesArray;
+
+  return (
+    <Card className="bg-green-50 dark:bg-green-950/20">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-green-600" />
+            Test Cases
+          </CardTitle>
+
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => append({ input: "", output: "" })}
+            className="gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Add Test Case
+          </Button>
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-6">
+        {fields.map((field, index) => (
+          <TestCaseCard
+            key={field.id}
+            index={index}
+            register={register}
+            errors={errors}
+            onRemove={() => remove(index)}
+            canRemove={fields.length > 1}
+          />
+        ))}
+
+        {typeof errors.testCases?.message === "string" && (
+          <p className="text-sm text-red-500">{errors.testCases.message}</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function TestCaseCard({
+  index,
+  register,
+  errors,
+  onRemove,
+  canRemove,
+}: TestCaseCardProps) {
+  const inputError = errors.testCases?.[index]?.input?.message;
+  const outputError = errors.testCases?.[index]?.output?.message;
+
+  return (
+    <Card className="bg-background">
+      <CardHeader className="pb-4">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-lg">Test Case #{index + 1}</CardTitle>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onRemove}
+            disabled={!canRemove}
+            className="text-red-500 gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            Remove
+          </Button>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <Label className="font-medium">Input</Label>
+
+            <Textarea
+              {...register(`testCases.${index}.input`)}
+              placeholder="Enter test case input"
+              className="mt-2 min-h-24 resize-y font-mono"
+            />
+
+            {inputError && (
+              <p className="text-sm text-red-500 mt-1">{inputError}</p>
+            )}
+          </div>
+
+          <div>
+            <Label className="font-medium">Expected Output</Label>
+
+            <Textarea
+              {...register(`testCases.${index}.output`)}
+              placeholder="Enter expected output"
+              className="mt-2 min-h-24 resize-y font-mono"
+            />
+
+            {outputError && (
+              <p className="text-sm text-red-500 mt-1">{outputError}</p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

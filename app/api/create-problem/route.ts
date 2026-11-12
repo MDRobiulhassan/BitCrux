@@ -43,28 +43,28 @@ export async function POST(request: NextRequest) {
       codeSnippets,
       referenceSolutions,
     } = body;
+    const difficultyMap: Record<string, Difficulty> = {
+      Easy: Difficulty.EASY,
+      Medium: Difficulty.MEDIUM,
+      Hard: Difficulty.HARD,
+    };
+    const normalizedDifficulty = difficultyMap[difficulty];
 
     // 4. Validate required fields
     if (
       !title ||
       !description ||
-      !difficulty ||
+      !normalizedDifficulty ||
       !constraints ||
       !Array.isArray(tags) ||
       !Array.isArray(testCases) ||
-      !Array.isArray(examples) ||
+      !examples ||
+      typeof examples !== "object" ||
       !codeSnippets ||
       !referenceSolutions
     ) {
       return NextResponse.json(
         { error: "Missing or invalid required fields" },
-        { status: 400 },
-      );
-    }
-
-    if (!Object.values(Difficulty).includes(difficulty)) {
-      return NextResponse.json(
-        { error: "Invalid difficulty" },
         { status: 400 },
       );
     }
@@ -171,7 +171,7 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         description,
-        difficulty,
+        difficulty: normalizedDifficulty,
         tags,
         examples,
         constraints,

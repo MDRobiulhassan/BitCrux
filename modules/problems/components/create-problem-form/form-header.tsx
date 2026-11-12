@@ -2,7 +2,19 @@ import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, FileText } from "lucide-react";
 
-export function FormHeader({ sampleType, setSampleType, onLoadSample }: any) {
+type SampleType = "DP" | "STRING";
+
+interface FormHeaderProps {
+  sampleType: SampleType;
+  setSampleType: (type: SampleType) => void;
+  onLoadSample: () => void;
+}
+
+export function FormHeader({
+  sampleType,
+  setSampleType,
+  onLoadSample,
+}: FormHeaderProps) {
   return (
     <CardHeader className="pb-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -16,6 +28,7 @@ export function FormHeader({ sampleType, setSampleType, onLoadSample }: any) {
             sampleType={sampleType}
             setSampleType={setSampleType}
           />
+
           <Button
             type="button"
             variant="secondary"
@@ -32,24 +45,28 @@ export function FormHeader({ sampleType, setSampleType, onLoadSample }: any) {
   );
 }
 
-function SampleTypeToggle({ sampleType, setSampleType }: any) {
+function SampleTypeToggle({
+  sampleType,
+  setSampleType,
+}: Pick<FormHeaderProps, "sampleType" | "setSampleType">) {
   return (
     <div className="flex border rounded-md">
       <Button
         type="button"
-        variant={sampleType === "string" ? "default" : "outline"}
+        variant={sampleType === "DP" ? "default" : "outline"}
         size="sm"
-        className="rounded-l-none"
-        onClick={() => setSampleType("string")}
+        className="rounded-r-none"
+        onClick={() => setSampleType("DP")}
       >
         DP Problem
       </Button>
+
       <Button
         type="button"
-        variant={sampleType === "string" ? "default" : "outline"}
+        variant={sampleType === "STRING" ? "default" : "outline"}
         size="sm"
         className="rounded-l-none"
-        onClick={() => setSampleType("string")}
+        onClick={() => setSampleType("STRING")}
       >
         String Problem
       </Button>

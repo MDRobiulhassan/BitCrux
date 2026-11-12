@@ -2,11 +2,9 @@ import axios from "axios";
 
 const JUDGE0_API_URL = process.env.JUDGE0_API_URL;
 const JUDGE0_API_KEY = process.env.JUDGE0_API_KEY;
-const JUDGE0_API_HOST = process.env.JUDGE0_API_HOST;
 
 const headers = {
-  "x-rapidapi-key": JUDGE0_API_KEY!,
-  "x-rapidapi-host": JUDGE0_API_HOST!,
+  Authorization: JUDGE0_API_KEY!,
   "Content-Type": "application/json",
 };
 
