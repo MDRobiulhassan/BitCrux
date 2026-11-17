@@ -33,3 +33,18 @@ export const getAllProblems = async () => {
     };
   }
 };
+
+export const getProblemById = async (id: string) => {
+  try {
+    const problem = await prisma.problem.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    return {
+      success: true,
+      data: problem,
+    };
+  } catch (error) {}
+};
