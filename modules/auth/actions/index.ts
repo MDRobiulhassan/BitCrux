@@ -69,3 +69,25 @@ export const getCurrentUserData = async () => {
     return data;
   } catch (error) {}
 };
+
+export const getAllSubmissionByCurrentUserForProblem = async (
+  problemId: string,
+) => {
+  const user = await getCurrentUserData();
+
+  if (!user || !("id" in user)) {
+    return { success: false as const, data: [] };
+  }
+
+  const submissions = await prisma.submission.findMany({
+    where: {
+      problemId: problemId,
+      userId: user?.id,
+    },
+  });
+
+  return {
+    success: true,
+    data: submissions,
+  };
+};

@@ -16,6 +16,19 @@ import {
 import { Editor } from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
 
+type EditorLanguage = "CPP" | "PYTHON" | "JAVA";
+
+interface CodeEditorPanelProps {
+  code: string;
+  onCodeChange: (value: string) => void;
+  selectedLanguage: EditorLanguage;
+  onLanguageChange: (language: EditorLanguage) => void;
+  onRun: () => void;
+  onSubmit: () => void;
+  isRunning: boolean;
+  isSubmitting: boolean;
+}
+
 const CodeEditorPanel = ({
   code,
   onCodeChange,
@@ -25,7 +38,7 @@ const CodeEditorPanel = ({
   onSubmit,
   isRunning,
   isSubmitting,
-}: any) => {
+}: CodeEditorPanelProps) => {
   const { theme } = useTheme();
 
   return (

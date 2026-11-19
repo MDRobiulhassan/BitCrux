@@ -11,7 +11,10 @@ interface ProblemTabsProps {
   submissionHistory: Submission[];
 }
 
-export function ProblemTabs({ problem, submissionHistory=[] }: ProblemTabsProps) {
+export function ProblemTabs({
+  problem,
+  submissionHistory = [],
+}: ProblemTabsProps) {
   return (
     <Card>
       <CardContent className="p-3">
@@ -37,9 +40,11 @@ export function ProblemTabs({ problem, submissionHistory=[] }: ProblemTabsProps)
           </TabsList>
 
           <TabsContent value="submissions" className="p-6">
-            <SubmissionHistory submissions={submissionHistory} />
+            <div className="py-8 text-muted-foreground whitespace-pre-wrap">
+              <SubmissionHistory submissions={submissionHistory} />
+            </div>
           </TabsContent>
-
+          
           <TabsContent value="editorial" className="p-6">
             <div className="py-8 text-muted-foreground whitespace-pre-wrap">
               {problem.editorial || "Editorial not available yet."}

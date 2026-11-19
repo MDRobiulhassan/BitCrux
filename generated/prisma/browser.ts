@@ -27,3 +27,18 @@ export type User = Prisma.UserModel
  * 
  */
 export type Problem = Prisma.ProblemModel
+/**
+ * Model Submission
+ * 
+ */
+export type Submission = Prisma.SubmissionModel
+/**
+ * Model TestCaseResult
+ * 
+ */
+export type TestCaseResult = Prisma.TestCaseResultModel
+/**
+ * Model ProblemSolved
+ * 
+ */
+export type ProblemSolved = Prisma.ProblemSolvedModel

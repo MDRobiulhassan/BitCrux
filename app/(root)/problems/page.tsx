@@ -15,7 +15,10 @@ const ProblemPage = async () => {
   }
   return (
     <div className="container mx-auto py-32">
-      <ProblemsTable problems={problems} user={user} />
+      <ProblemsTable
+        problems={problems}
+        user={user && "role" in user ? user : null}
+      />
     </div>
   );
 };

@@ -17,10 +17,11 @@ import {
 
 import { Card, CardContent } from "@/components/ui/card";
 import { ProblemsPagination } from "./problems-pagination";
+import type { Problem, User } from "@/generated/prisma/client";
 
 interface ProblemsTableProps {
-  problems?: any[];
-  user?: any;
+  problems?: Problem[];
+  user?: Pick<User, "role"> | null;
 }
 
 const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {

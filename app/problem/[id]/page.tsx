@@ -3,7 +3,9 @@
 import { Spinner } from "@/components/ui/spinner";
 import { useEditor } from "@/hooks/use-editor";
 import { useProblem } from "@/hooks/use-problem";
+import { useSubmissionHistory } from "@/hooks/use-submission-history";
 import CodeEditorPanel from "@/modules/problems/components/code-editor-panel";
+import { ExecutionResults } from "@/modules/problems/components/execution-results";
 import { ProblemDescription } from "@/modules/problems/components/problem-description";
 import { ProblemHeader } from "@/modules/problems/components/problem-header";
 import { ProblemTabs } from "@/modules/problems/components/problem-tabs";
@@ -13,7 +15,7 @@ import { useParams } from "next/navigation";
 const ProblemIdPage = () => {
   const params = useParams<{ id: string }>();
   const { problem, isLoading } = useProblem(params.id);
-  //   const { submissionHistory } = useSubmissionHistory(params.id);
+  const { submissionHistory } = useSubmissionHistory(params.id);
 
   const {
     selectedLanguage,
@@ -40,7 +42,7 @@ const ProblemIdPage = () => {
       <div className="flex h-screen flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-bold">Problem Not Found</h1>
         <p className="text-muted-foreground">
-          The problem you're looking for doesn't exist.
+          The problem you&apos;re looking for doesn&apos;t exist.
         </p>
       </div>
     );
@@ -55,7 +57,10 @@ const ProblemIdPage = () => {
           {/* LEFT PANEL */}
           <div className="space-y-6">
             <ProblemDescription problem={problem} selectedLanguage={"cpp"} />
-            <ProblemTabs problem={problem} submissionHistory={[]} />
+            <ProblemTabs
+              problem={problem}
+              submissionHistory={submissionHistory}
+            />
           </div>
 
           {/* RIGHT PANEL */}
@@ -71,7 +76,23 @@ const ProblemIdPage = () => {
               isSubmitting={isSubmitting}
             />
 
-            <TestCasesPanel testCases={problem.testCases} />
+            <TestCasesPanel
+              testCases={
+                Array.isArray(problem.testCases)
+                  ? problem.testCases.filter(
+                      (testCase): testCase is { input: string; output: string } =>
+                        typeof testCase === "object" &&
+                        testCase !== null &&
+                        "input" in testCase &&
+                        typeof testCase.input === "string" &&
+                        "output" in testCase &&
+                        typeof testCase.output === "string",
+                    )
+                  : []
+              }
+            />
+
+            <ExecutionResults executionResponse={executionResponse} />
           </div>
         </div>
       </div>

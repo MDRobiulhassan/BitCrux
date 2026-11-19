@@ -2,7 +2,20 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, XCircle } from "lucide-react";
 
-export const TestCaseTable = ({ testCases }:any) => {
+interface TestCaseResult {
+  testCase?: number;
+  passed: boolean;
+  memory: string | null;
+  time: string | null;
+  stdout: string | null;
+  expected: string;
+}
+
+interface TestCaseTableProps {
+  testCases: TestCaseResult[];
+}
+
+export const TestCaseTable = ({ testCases }: TestCaseTableProps) => {
   return (
     <div className="w-full rounded-lg border">
       <Table>
@@ -19,7 +32,7 @@ export const TestCaseTable = ({ testCases }:any) => {
         </TableHeader>
         <TableBody>
           {testCases.map((testCase, index) => (
-            <TableRow key={testCase.id}>
+            <TableRow key={testCase.testCase ?? index}>
               <TableCell className="font-medium">Test {index + 1}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">

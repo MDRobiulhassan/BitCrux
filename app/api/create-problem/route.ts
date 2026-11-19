@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     // 5. Validate test cases
     const invalidTestCase = testCases.some(
-      (testCase: any) =>
+      (testCase: { input?: unknown; output?: unknown }) =>
         typeof testCase.input !== "string" ||
         typeof testCase.output !== "string",
     );
