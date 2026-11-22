@@ -11,7 +11,7 @@ export const onBoardUser = async () => {
     }
 
     const { id, firstName, lastName, imageUrl, emailAddresses } = user;
-    const newUser = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { clerkId: id },
       update: {
         firstName: firstName || null,
@@ -27,7 +27,9 @@ export const onBoardUser = async () => {
         email: emailAddresses[0].emailAddress || null,
       },
     });
-  } catch (error) {}
+  } catch {
+    return { success: false, error: "Failed to onboard user" };
+  }
 };
 
 export const currentUserRole = async () => {
@@ -67,7 +69,9 @@ export const getCurrentUserData = async () => {
     });
 
     return data;
-  } catch (error) {}
+  } catch {
+    return { success: false, error: "Failed to fetch authenticated user" };
+  }
 };
 
 export const getAllSubmissionByCurrentUserForProblem = async (

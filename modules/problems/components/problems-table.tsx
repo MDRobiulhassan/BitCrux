@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { ProblemsHeader } from "./problems-header";
 import { useProblemFilters } from "../hooks/use-problem-filters";
 import { ProblemsFilters } from "./problem-filters";
@@ -18,6 +17,9 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { ProblemsPagination } from "./problems-pagination";
 import type { Problem, User } from "@/generated/prisma/client";
+import { usePlaylistAction } from "@/modules/playlists/hooks/use-playlist-action";
+import CreatePlaylistModal from "@/modules/playlists/components/create-playlist";
+import AddToPlaylistModal from "@/modules/playlists/components/add-to-playlist";
 
 interface ProblemsTableProps {
   problems?: Problem[];
@@ -25,25 +27,13 @@ interface ProblemsTableProps {
 }
 
 const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
-  const router = useRouter();
   const filters = useProblemFilters({ problems });
   const pagination = usePagination(filters.filteredProblems);
-
- // Delete problem
-  const handleDelete = async (problemId: string) => {
-    // Call your delete API here
-  };
-
-  // Save problem to playlist
-  const handleSave = (problemId: string) => {
-    // Open AddToPlaylistModal for this problem
-  };
+  const playlist = usePlaylistAction();
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 p-6">
-      <ProblemsHeader
-        onCreatePlaylist={() => router.push("/playlists/create")}
-      />
+      <ProblemsHeader onCreatePlaylist={playlist.openCreateModal} />
       <ProblemsFilters
         search={filters.search}
         onSearchChange={filters.setSearch}
@@ -74,8 +64,8 @@ const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
                     key={problem.id}
                     problem={problem}
                     user={user}
-                    onDelete={handleDelete}
-                    onSave={handleSave}
+                    onDelete={() => {}}
+                    onSave={playlist.openAddToPlaylist}
                   />
                 ))
               ) : (
@@ -99,7 +89,7 @@ const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
         />
       )}
 
-      {/* <CreatePlaylistModal
+      <CreatePlaylistModal
         isOpen={playlist.isCreateModalOpen}
         onClose={playlist.closeCreateModal}
         onSubmit={playlist.handleCreatePlaylist}
@@ -109,12 +99,10 @@ const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
         isOpen={playlist.isAddToPlaylistModalOpen}
         onClose={playlist.closeAddToPlaylistModal}
         onSubmit={playlist.handleAddToPlaylist}
-        problemId={playlist.selectedProblemId}
-      /> */}
+        problemId={playlist.selectedProblemId ?? ""}
+      />
     </div>
   );
-
 };
-
 
 export default ProblemsTable;

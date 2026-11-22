@@ -6,10 +6,6 @@ import { ConstraintsSection } from "./constraint-section";
 
 import type { Problem } from "@/generated/prisma/client";
 
-interface ProblemDescriptionProps {
-  problem: Problem;
-}
-
 type Example = {
   [key: string]: string | undefined;
   input: string;
@@ -17,11 +13,8 @@ type Example = {
   explanation?: string;
 };
 
-type Language = "cpp" | "python" | "java";
-
 interface ProblemDescriptionProps {
   problem: Problem;
-  selectedLanguage: Language;
 }
 
 function isExample(value: unknown): value is Example {
@@ -41,7 +34,6 @@ function isExample(value: unknown): value is Example {
 
 export function ProblemDescription({
   problem,
-  selectedLanguage,
 }: ProblemDescriptionProps) {
   const examples: Example[] =
     typeof problem.examples === "object" &&

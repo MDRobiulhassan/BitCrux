@@ -56,7 +56,7 @@ const ProblemIdPage = () => {
         <div className="grid lg:grid-cols-2 gap-6">
           {/* LEFT PANEL */}
           <div className="space-y-6">
-            <ProblemDescription problem={problem} selectedLanguage={"cpp"} />
+            <ProblemDescription problem={problem} />
             <ProblemTabs
               problem={problem}
               submissionHistory={submissionHistory}

@@ -55,7 +55,12 @@ export const getProblemById = async (id: string) => {
       success: true,
       data: problem,
     };
-  } catch (error) {}
+  } catch {
+    return {
+      success: false,
+      error: "Failed to fetch problem",
+    };
+  }
 };
 
 export const executeCode = async (
