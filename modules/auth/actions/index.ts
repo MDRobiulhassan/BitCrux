@@ -66,6 +66,11 @@ export const getCurrentUserData = async () => {
 
     const data = await prisma.user.findUnique({
       where: { clerkId: user.id },
+      include: {
+        submissions: true,
+        solvedProblems: true,
+        playlists: true,
+      },
     });
 
     return data;
