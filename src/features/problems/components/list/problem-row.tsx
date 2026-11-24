@@ -52,6 +52,7 @@ export function ProblemRow({
         <TableCell>
           <ActionButtons
             problemId={problem.id}
+            problemSlug={problem.slug}
             isAdmin={user.role === "ADMIN"}
             isSaved={isSaved}
             onDelete={onDelete}
@@ -127,6 +128,7 @@ function DifficultyBadge({ difficulty }: DifficultyBadgeProps) {
 
 interface ActionButtonsProps {
   problemId: string;
+  problemSlug: string;
   isAdmin: boolean;
   isSaved: boolean;
   onDelete: (problemId: string) => void;
@@ -135,6 +137,7 @@ interface ActionButtonsProps {
 
 function ActionButtons({
   problemId,
+  problemSlug,
   isAdmin,
   isSaved,
   onDelete,
@@ -148,12 +151,15 @@ function ActionButtons({
             variant="destructive"
             size="sm"
             onClick={() => onDelete(problemId)}
+            aria-label="Delete problem"
           >
             <TrashIcon className="h-4 w-4" />
           </Button>
 
-          <Button variant="outline" size="sm" disabled>
-            <PencilIcon className="h-4 w-4" />
+          <Button asChild variant="outline" size="sm" aria-label="Edit problem">
+            <Link href={`/problems/${problemSlug}/edit`}>
+              <PencilIcon className="h-4 w-4" />
+            </Link>
           </Button>
         </>
       )}

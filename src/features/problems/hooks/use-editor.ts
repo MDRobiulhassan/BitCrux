@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { executeCode } from "@/features/submissions/actions/execute-code";
+import {
+  executeCode,
+  runCode,
+} from "@/features/submissions/actions/execute-code";
 import { getJudge0LanguageId } from "@/features/problems/constants/languages";
 import {
-  isProblemTestCaseArray,
   type ProblemLanguage,
 } from "@/features/problems/types";
 import type { Problem } from "@/generated/prisma/client";
@@ -77,27 +79,16 @@ export function useEditor(
         throw new Error("Unsupported programming language.");
       }
 
-      const testCases = problem.testCases;
+      const response = await runCode(code, languageId, problem.id);
+      setExecutionResponse(response);
 
-      if (!Array.isArray(testCases)) {
-        throw new Error("Invalid test cases.");
+      if (!response.success) {
+        toast.error(response.error);
+      } else if (response.allPassed) {
+        toast.success("All test cases passed.");
+      } else {
+        toast.error("Some test cases failed.");
       }
-
-      // const response = await executeCode(
-      //   code,
-      //   languageId,
-      //   stdin,
-      //   expectedOutputs,
-      //   problem.id,
-      // );
-
-      // setExecutionResponse(response);
-
-      // if (response.success) {
-      //   toast.success("Code executed successfully.");
-      // } else {
-      //   toast.error("Code execution failed.");
-      // }
     } catch (error) {
       console.error("Error executing code:", error);
 
@@ -120,26 +111,15 @@ export function useEditor(
         return;
       }
 
-      const testCases = problem.testCases;
-
-      if (!isProblemTestCaseArray(testCases) || testCases.length === 0) {
-        throw new Error("Invalid or missing test cases.");
-      }
-
       const languageId = getJudge0LanguageId(selectedLanguage);
 
       if (!languageId) {
         throw new Error("Unsupported programming language.");
       }
 
-      const stdin = testCases.map((testCase) => testCase.input);
-      const expectedOutputs = testCases.map((testCase) => testCase.output);
-
       const res = await executeCode(
         code,
         languageId,
-        stdin,
-        expectedOutputs,
         problem.id,
       );
 

@@ -1,5 +1,17 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { ProblemsHeader } from "./problems-header";
 import { useProblemFilters } from "@/features/problems/hooks/use-problem-filters";
 import { ProblemsFilters } from "./problem-filters";
@@ -18,6 +30,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ProblemsPagination } from "./problems-pagination";
 import type { User } from "@/generated/prisma/client";
 import type { ProblemListItem } from "@/features/problems/types";
+import { deleteProblem } from "@/features/problems/actions/delete-problem";
 import {
   AddToPlaylistModal,
   CreatePlaylistModal,
@@ -30,11 +43,39 @@ interface ProblemsTableProps {
 }
 
 const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
+  const router = useRouter();
+  const [problemToDelete, setProblemToDelete] =
+    useState<ProblemListItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const filters = useProblemFilters({ problems });
   const pagination = usePagination(filters.filteredProblems);
   const playlist = usePlaylistAction(
     problems.filter((problem) => problem.isSaved).map((problem) => problem.id),
   );
+
+  const handleDelete = async () => {
+    if (!problemToDelete) return;
+
+    try {
+      setIsDeleting(true);
+      const result = await deleteProblem(problemToDelete.id);
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      toast.success(`Deleted "${problemToDelete.title}".`);
+      setProblemToDelete(null);
+      router.refresh();
+    } catch (error) {
+      console.error("Error deleting problem:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Unable to delete problem.",
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 p-6">
@@ -73,7 +114,11 @@ const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
                     problem={problem}
                     user={user}
                     isSaved={playlist.savedProblemIds.has(problem.id)}
-                    onDelete={() => {}}
+                    onDelete={(problemId) => {
+                      setProblemToDelete(
+                        problems.find((item) => item.id === problemId) ?? null,
+                      );
+                    }}
                     onSave={playlist.openAddToPlaylist}
                   />
                 ))
@@ -110,6 +155,40 @@ const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
         onSubmit={playlist.handleAddToPlaylist}
         problemId={playlist.selectedProblemId ?? ""}
       />
+
+      <Dialog
+        open={problemToDelete !== null}
+        onOpenChange={(open) => {
+          if (!open && !isDeleting) {
+            setProblemToDelete(null);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete this problem?</DialogTitle>
+            <DialogDescription>
+              {`"${problemToDelete?.title ?? "This problem"}" and its submissions will be permanently deleted.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setProblemToDelete(null)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete Problem"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

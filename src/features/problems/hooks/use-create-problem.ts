@@ -13,17 +13,26 @@ import {
   sampleStringProblem,
 } from "@/features/problems/constants/sample-problem";
 import { createProblem } from "@/features/problems/actions/create-problem";
+import { updateProblem } from "@/features/problems/actions/update-problem";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-export function useCreateProblem() {
+interface UseCreateProblemOptions {
+  problemId?: string;
+  initialValues?: ProblemFormValues;
+}
+
+export function useCreateProblem({
+  problemId,
+  initialValues,
+}: UseCreateProblemOptions = {}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [sampleType, setSampleType] = useState<"DP" | "STRING">("DP");
 
   const form = useForm<ProblemFormValues>({
     resolver: zodResolver(problemSchema),
-    defaultValues: defaultFormValues,
+    defaultValues: initialValues ?? defaultFormValues,
   });
 
   const testCasesArray = useFieldArray({
@@ -34,19 +43,29 @@ export function useCreateProblem() {
   const onSubmit = async (values: ProblemFormValues) => {
     try {
       setIsLoading(true);
-      const result = await createProblem(values);
+      const result = problemId
+        ? await updateProblem(problemId, values)
+        : await createProblem(values);
 
       if (!result.success) {
         throw new Error(result.error);
       }
 
-      if (result.warning) {
+      if ("warning" in result && result.warning) {
         toast.warning(`Problem created. ${result.warning}`);
       } else {
-        toast.success("Problem created successfully!");
+        toast.success(
+          problemId
+            ? "Problem updated successfully!"
+            : "Problem created successfully!",
+        );
       }
 
-      router.push("/problems");
+      if (problemId && "slug" in result.data) {
+        router.push(`/problems/${result.data.slug}`);
+      } else {
+        router.push("/problems");
+      }
     } catch (error) {
       console.error("Error creating problem:", error);
       toast.error(

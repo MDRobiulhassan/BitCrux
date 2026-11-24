@@ -5,12 +5,16 @@ import { Download, FileText } from "lucide-react";
 type SampleType = "DP" | "STRING";
 
 interface FormHeaderProps {
+  title: string;
+  showSamples: boolean;
   sampleType: SampleType;
   setSampleType: (type: SampleType) => void;
   onLoadSample: () => void;
 }
 
 export function FormHeader({
+  title,
+  showSamples,
   sampleType,
   setSampleType,
   onLoadSample,
@@ -20,26 +24,28 @@ export function FormHeader({
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <CardTitle className="text-3xl flex items-center gap-3">
           <FileText className="w-8 h-8 text-amber-600" />
-          Create Problem
+          {title}
         </CardTitle>
 
-        <div className="flex flex-col md:flex-row gap-3">
-          <SampleTypeToggle
-            sampleType={sampleType}
-            setSampleType={setSampleType}
-          />
+        {showSamples && (
+          <div className="flex flex-col md:flex-row gap-3">
+            <SampleTypeToggle
+              sampleType={sampleType}
+              setSampleType={setSampleType}
+            />
 
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={onLoadSample}
-            className="gap-2"
-          >
-            <Download className="w-4 h-4" />
-            Load Sample
-          </Button>
-        </div>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={onLoadSample}
+              className="gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Load Sample
+            </Button>
+          </div>
+        )}
       </div>
     </CardHeader>
   );

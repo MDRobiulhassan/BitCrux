@@ -2,36 +2,40 @@
 
 import { SubmissionDetails } from "@/features/submissions";
 import { TestCaseTable } from "@/features/problems/components/editor/testcase-table";
-import type { Submission } from "@/generated/prisma/client";
-
-interface ExecutionTestCaseResult {
-  testCase: number;
-  passed: boolean;
-  stdout: string | null;
-  expected: string;
-  stderr: string | null;
-  compileOutput: string | null;
-  status: string | null;
-  memory: string | null;
-  time: string | null;
-}
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import type { CodeExecutionResponse } from "@/features/submissions/types";
 
 interface ExecutionResultsProps {
-  executionResponse: {
-    submission?: Submission;
-    testCaseResults?: ExecutionTestCaseResult[];
-  } | null;
+  executionResponse: CodeExecutionResponse | null;
 }
 
 export function ExecutionResults({ executionResponse }: ExecutionResultsProps) {
-  if (!executionResponse?.submission) {
+  if (!executionResponse?.testCaseResults?.length) {
     return null;
   }
 
   return (
     <div className="space-y-4 mt-4">
-      <SubmissionDetails submission={executionResponse.submission} />
-      <TestCaseTable testCases={executionResponse.testCaseResults ?? []} />
+      {executionResponse.submission ? (
+        <SubmissionDetails submission={executionResponse.submission} />
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Run Results</CardTitle>
+            <CardDescription>
+              {executionResponse.allPassed
+                ? "All test cases passed."
+                : "Some test cases failed."}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
+      <TestCaseTable testCases={executionResponse.testCaseResults} />
     </div>
   );
 }

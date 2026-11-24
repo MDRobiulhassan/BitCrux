@@ -2,6 +2,7 @@
 
 import "server-only";
 
+import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db";
 import {
   decodeJudge0Text,
@@ -9,98 +10,208 @@ import {
   pollBatchResults,
   submitBatch,
 } from "@/server/services/judge0";
-import { getCurrentUserData } from "@/features/auth/actions/get-current-user-data";
+import { isProblemTestCaseArray } from "@/features/problems/types";
 
-export async function executeCode(
-  source_code: string,
-  language_id: number,
-  stdin: string[],
-  expected_output: string[],
-  id: string,
+type TestCase = {
+  input: string;
+  output: string;
+};
+
+interface ExecutionTestCaseResult {
+  testCase: number;
+  passed: boolean;
+  stdout: string | null;
+  expected: string;
+  stderr: string | null;
+  compileOutput: string | null;
+  status: string | null;
+  memory: string | null;
+  time: string | null;
+}
+
+async function getExecutionContext(problemId: string) {
+  const clerkUser = await currentUser();
+
+  if (!clerkUser) {
+    return { success: false as const, error: "Unauthorized" };
+  }
+
+  const [user, problem] = await Promise.all([
+    prisma.user.findUnique({
+      where: { clerkId: clerkUser.id },
+      select: { id: true },
+    }),
+    prisma.problem.findUnique({
+      where: { id: problemId },
+      select: { testCases: true },
+    }),
+  ]);
+
+  if (!user) {
+    return { success: false as const, error: "Unauthorized" };
+  }
+
+  if (!problem) {
+    return { success: false as const, error: "Problem not found" };
+  }
+
+  if (!isProblemTestCaseArray(problem.testCases) || !problem.testCases.length) {
+    return { success: false as const, error: "Problem has invalid test cases" };
+  }
+
+  return {
+    success: true as const,
+    data: { userId: user.id, testCases: problem.testCases },
+  };
+}
+
+async function runAgainstTestCases(
+  sourceCode: string,
+  languageId: number,
+  testCases: TestCase[],
+): Promise<ExecutionTestCaseResult[]> {
+  const submissions = testCases.map((testCase) => ({
+    source_code: sourceCode,
+    language_id: languageId,
+    stdin: testCase.input,
+    expected_output: testCase.output,
+    base64_encoded: false,
+    wait: false,
+  }));
+
+  const submitResponse = await submitBatch(submissions);
+  const tokens = submitResponse.map((response) => response.token);
+
+  if (tokens.length !== testCases.length) {
+    throw new Error("Compiler service returned an unexpected number of tokens.");
+  }
+
+  const results = await pollBatchResults(tokens);
+
+  if (results.length !== testCases.length) {
+    throw new Error("Compiler service returned an unexpected result count.");
+  }
+
+  return results.map((result, index) => {
+    const stdout = decodeJudge0Text(result.stdout);
+    const expected = testCases[index].output;
+
+    return {
+      testCase: index + 1,
+      passed: (stdout?.trim() ?? "") === expected.trim(),
+      stdout,
+      expected,
+      stderr: decodeJudge0Text(result.stderr),
+      compileOutput: decodeJudge0Text(result.compile_output),
+      status: result.status.description || null,
+      memory: result.memory ? `${result.memory} KB` : null,
+      time: result.time ? `${result.time} s` : null,
+    };
+  });
+}
+
+function isSupportedLanguage(languageId: number) {
+  return getLanguageName(languageId) !== "Unknown";
+}
+
+function logExecutionError(action: string, error: unknown) {
+  console.error(
+    `${action} error:`,
+    error instanceof Error ? error.message : "Unknown error",
+  );
+}
+
+export async function runCode(
+  sourceCode: string,
+  languageId: number,
+  problemId: string,
 ) {
   try {
-    const user = await getCurrentUserData();
-
-    if (!user || !("id" in user)) {
-      return {
-        success: false,
-        error: "Unauthorized",
-      }
+    if (!sourceCode.trim()) {
+      return { success: false as const, error: "Please write some code first." };
     }
 
-    if (
-      !Array.isArray(stdin) ||
-      stdin.length === 0 ||
-      !Array.isArray(expected_output) ||
-      expected_output.length !== stdin.length
-    ) {
-      return {
-        success: false,
-        error: "Invalid Test Cases",
-      };
+    if (!isSupportedLanguage(languageId)) {
+      return { success: false as const, error: "Unsupported programming language." };
     }
 
-    const submissions = stdin.map((input) => ({
-      source_code,
-      language_id,
-      stdin: input,
-      base64_encoded: false,
-      wait: false,
-    }));
+    const context = await getExecutionContext(problemId);
 
-    const submitResponse = await submitBatch(submissions);
-    const tokens = submitResponse.map((response: { token: string }) => response.token);
-
-    const results = await pollBatchResults(tokens);
-
-    const detailedResults = results.map((result, index) => {
-      const stdout = decodeJudge0Text(result.stdout);
-      const expectedOutput = expected_output[index];
-
-      const actualOutput = stdout?.trim() ?? null;
-      const passed = actualOutput === expectedOutput.trim();
-
-      return {
-        testCase: index + 1,
-        passed,
-        stdout,
-        expected: expectedOutput,
-        stderr: decodeJudge0Text(result.stderr),
-        compileOutput: decodeJudge0Text(result.compile_output),
-        status: result.status.description || null,
-        memory: result.memory ? `${result.memory} KB` : null,
-        time: result.time ? `${result.time} s` : null,
-      };
-    });
-
-    if (results.length !== expected_output.length) {
-      throw new Error("Unexpected number of test case results.");
+    if (!context.success) {
+      return context;
     }
 
-    const allPassed = detailedResults.every((result) => result.passed);
+    const testCaseResults = await runAgainstTestCases(
+      sourceCode,
+      languageId,
+      context.data.testCases,
+    );
+
+    return {
+      success: true as const,
+      allPassed: testCaseResults.every((result) => result.passed),
+      testCaseResults,
+    };
+  } catch (error) {
+    logExecutionError("Code run", error);
+    return {
+      success: false as const,
+      error: error instanceof Error ? error.message : "Code run failed.",
+    };
+  }
+}
+
+export async function executeCode(
+  sourceCode: string,
+  languageId: number,
+  problemId: string,
+) {
+  try {
+    if (!sourceCode.trim()) {
+      return { success: false as const, error: "Please write some code first." };
+    }
+
+    if (!isSupportedLanguage(languageId)) {
+      return { success: false as const, error: "Unsupported programming language." };
+    }
+
+    const context = await getExecutionContext(problemId);
+
+    if (!context.success) {
+      return context;
+    }
+
+    const testCaseResults = await runAgainstTestCases(
+      sourceCode,
+      languageId,
+      context.data.testCases,
+    );
+    const allPassed = testCaseResults.every((result) => result.passed);
 
     const submission = await prisma.$transaction(async (tx) => {
       const createdSubmission = await tx.submission.create({
         data: {
-          userId: user.id,
-          problemId: id,
-          sourceCode: source_code,
-          language: getLanguageName(language_id),
-          stdin: stdin.join("\n"),
+          userId: context.data.userId,
+          problemId,
+          sourceCode,
+          language: getLanguageName(languageId),
+          stdin: context.data.testCases.map((testCase) => testCase.input).join("\n"),
           stdout: JSON.stringify(
-            detailedResults.map((result) => result.stdout),
+            testCaseResults.map((result) => result.stdout),
           ),
-          stderr: detailedResults.some((r) => r.stderr)
-            ? JSON.stringify(detailedResults.map((r) => r.stderr))
+          stderr: testCaseResults.some((result) => result.stderr)
+            ? JSON.stringify(testCaseResults.map((result) => result.stderr))
             : null,
-          compileOutput: detailedResults.some((r) => r.compileOutput)
-            ? JSON.stringify(detailedResults.map((r) => r.compileOutput))
+          compileOutput: testCaseResults.some((result) => result.compileOutput)
+            ? JSON.stringify(
+                testCaseResults.map((result) => result.compileOutput),
+              )
             : null,
           status: allPassed ? "Accepted" : "Wrong Answer",
-          memory: JSON.stringify(detailedResults.map((r) => r.memory)),
-          time: JSON.stringify(detailedResults.map((r) => r.time)),
+          memory: JSON.stringify(testCaseResults.map((result) => result.memory)),
+          time: JSON.stringify(testCaseResults.map((result) => result.time)),
           testCaseResults: {
-            create: detailedResults,
+            create: testCaseResults,
           },
         },
         include: {
@@ -112,14 +223,14 @@ export async function executeCode(
         await tx.problemSolved.upsert({
           where: {
             userId_problemId: {
-              userId: user.id,
-              problemId: id,
+              userId: context.data.userId,
+              problemId,
             },
           },
           update: {},
           create: {
-            userId: user.id,
-            problemId: id,
+            userId: context.data.userId,
+            problemId,
           },
         });
       }
@@ -128,20 +239,17 @@ export async function executeCode(
     });
 
     return {
-      success: true,
+      success: true as const,
       allPassed,
       submission,
-      testCaseResults: detailedResults,
+      testCaseResults,
     };
   } catch (error) {
-    console.error(
-      "Code execution error:",
-      error instanceof Error ? error.message : "Unknown error",
-    );
-
+    logExecutionError("Code submission", error);
     return {
-      success: false,
-      error: error instanceof Error ? error.message : "Code execution failed.",
+      success: false as const,
+      error:
+        error instanceof Error ? error.message : "Code execution failed.",
     };
   }
-};
+}
