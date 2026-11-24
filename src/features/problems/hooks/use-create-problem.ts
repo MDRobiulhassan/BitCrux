@@ -8,7 +8,10 @@ import {
   problemSchema,
   type ProblemFormValues,
 } from "@/features/problems/schemas";
-import { sampleProblem } from "@/features/problems/constants/sample-problem";
+import {
+  sampleProblem,
+  sampleStringProblem,
+} from "@/features/problems/constants/sample-problem";
 import { createProblem } from "@/features/problems/actions/create-problem";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -37,7 +40,12 @@ export function useCreateProblem() {
         throw new Error(result.error);
       }
 
-      toast.success("Problem created successfully!");
+      if (result.warning) {
+        toast.warning(`Problem created. ${result.warning}`);
+      } else {
+        toast.success("Problem created successfully!");
+      }
+
       router.push("/problems");
     } catch (error) {
       console.error("Error creating problem:", error);
@@ -50,9 +58,9 @@ export function useCreateProblem() {
   };
 
   const loadSampleData = () => {
-    if (sampleType !== "DP") return;
-
-    form.reset(sampleProblem);
+    form.reset(
+      sampleType === "DP" ? sampleProblem : sampleStringProblem,
+    );
   };
 
   return {

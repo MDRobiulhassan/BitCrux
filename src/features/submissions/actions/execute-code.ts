@@ -134,7 +134,10 @@ export async function executeCode(
       testCaseResults: detailedResults,
     };
   } catch (error) {
-    console.error("Code execution error:", error);
+    console.error(
+      "Code execution error:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
 
     return {
       success: false,

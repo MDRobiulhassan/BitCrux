@@ -2,10 +2,15 @@ import React from "react";
 import { Trophy, CheckCircle, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { ProblemSolved } from "@/generated/prisma/client";
+import Link from "next/link";
+import type { Problem, ProblemSolved } from "@/generated/prisma/client";
+
+type SolvedProblemWithDetails = ProblemSolved & {
+  problem: Pick<Problem, "slug" | "title">;
+};
 
 interface SolvedProblemsProps {
-  solvedProblems: ProblemSolved[];
+  solvedProblems: SolvedProblemWithDetails[];
 }
 
 const SolvedProblems = ({ solvedProblems }: SolvedProblemsProps) => {
@@ -53,11 +58,12 @@ const SolvedProblems = ({ solvedProblems }: SolvedProblemsProps) => {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold mb-2">Problem Solved</h3>
-                      <div className="text-sm text-muted-foreground mb-3">
-                        <Badge variant="outline" className="font-mono text-xs">
-                          {problem.problemId.slice(0, 8)}...
-                        </Badge>
-                      </div>
+                      <Link
+                        href={`/problems/${problem.problem.slug}`}
+                        className="mb-3 inline-block text-sm text-primary hover:underline"
+                      >
+                        {problem.problem.title}
+                      </Link>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Calendar className="w-3 h-3" />
                         <span>Solved on {formatDate(problem.createdAt)}</span>

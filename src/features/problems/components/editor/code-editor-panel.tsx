@@ -43,7 +43,8 @@ const CodeEditorPanel = ({
   isAuthenticated,
   authLoaded,
 }: CodeEditorPanelProps) => {
-  const { theme } = useTheme();
+  const { resolvedTheme, theme } = useTheme();
+  const editorTheme = (resolvedTheme ?? theme) === "dark" ? "vs-dark" : "light";
 
   return (
     <Card>
@@ -75,7 +76,7 @@ const CodeEditorPanel = ({
             language={getEditorLanguage(selectedLanguage)}
             value={code}
             onChange={(value) => onCodeChange(value ?? "")}
-            theme={theme === "dark" ? "vs-dark" : "light"}
+            theme={editorTheme}
             options={EDITOR_OPTIONS}
           />
         </div>

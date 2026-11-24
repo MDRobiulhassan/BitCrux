@@ -7,9 +7,16 @@ import { problemSchema } from "@/features/problems/schemas";
 import { requireAdmin } from "@/server/auth/require-admin";
 import { prisma } from "@/server/db";
 import { Difficulty } from "@/generated/prisma/client";
-import { pollBatchResults, submitBatch } from "@/server/services/judge0";
-import type { ServerResult } from "@/types";
+import {
+  CompilerServiceUnavailableError,
+  pollBatchResults,
+  submitBatch,
+} from "@/server/services/judge0";
 import { createProblemSlug } from "@/features/problems/utils/problem-slug";
+
+type CreateProblemResult =
+  | { success: true; data: { id: string }; warning?: string }
+  | { success: false; error: string };
 
 const difficultyMap = {
   Easy: Difficulty.EASY,
@@ -19,7 +26,7 @@ const difficultyMap = {
 
 export async function createProblem(
   input: unknown,
-): Promise<ServerResult<{ id: string }>> {
+): Promise<CreateProblemResult> {
   try {
     const access = await requireAdmin();
 
@@ -42,6 +49,7 @@ export async function createProblem(
     const values = parsedInput.data;
     const testCases = values.testCases;
     const languages = Object.entries(values.referenceSolutions);
+    let validationWarning: string | undefined;
 
     for (const [language, solutionCode] of languages) {
       const languageId = getJudge0LanguageId(language);
@@ -64,34 +72,44 @@ export async function createProblem(
         expected_output: testCase.output,
       }));
 
-      const submissionResults = await submitBatch(submissions);
-      const tokens = submissionResults.map((result) => result.token);
+      try {
+        const submissionResults = await submitBatch(submissions);
+        const tokens = submissionResults.map((result) => result.token);
 
-      if (tokens.length !== testCases.length) {
-        return {
-          success: false,
-          error: `Judge0 submission failed for ${language}`,
-        };
-      }
+        if (tokens.length !== testCases.length) {
+          return {
+            success: false,
+            error: `Compiler service submission failed for ${language}`,
+          };
+        }
 
-      const results = await pollBatchResults(tokens);
+        const results = await pollBatchResults(tokens);
 
-      if (results.length !== testCases.length) {
-        throw new Error(`Unexpected result count for ${language}.`);
-      }
+        if (results.length !== testCases.length) {
+          throw new Error(`Unexpected result count for ${language}.`);
+        }
 
-      const failedResult = results.find((result) => result.status.id !== 3);
+        const failedResult = results.find((result) => result.status.id !== 3);
 
-      if (failedResult) {
-        return {
-          success: false,
-          error: `Reference solution validation failed for ${language}: ${
-            failedResult.stderr ||
-            failedResult.compile_output ||
-            failedResult.message ||
-            failedResult.status.description
-          }`,
-        };
+        if (failedResult) {
+          return {
+            success: false,
+            error: `Reference solution validation failed for ${language}: ${
+              failedResult.stderr ||
+              failedResult.compile_output ||
+              failedResult.message ||
+              failedResult.status.description
+            }`,
+          };
+        }
+      } catch (error) {
+        if (!(error instanceof CompilerServiceUnavailableError)) {
+          throw error;
+        }
+
+        validationWarning = `${error.message} The problem will be saved, but one or more reference solutions were not verified.`;
+        console.warn("Saving problem without complete solution validation.");
+        break;
       }
     }
 
@@ -158,12 +176,19 @@ export async function createProblem(
       throw new Error("Unable to generate a unique problem URL.");
     }
 
-    return { success: true, data: problem };
+    return {
+      success: true,
+      data: problem,
+      ...(validationWarning ? { warning: validationWarning } : {}),
+    };
   } catch (error) {
-    console.error("Create problem error:", error);
+    console.error(
+      "Create problem error:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
     return {
       success: false,
-      error: "Unable to create problem",
+      error: error instanceof Error ? error.message : "Unable to create problem",
     };
   }
 }

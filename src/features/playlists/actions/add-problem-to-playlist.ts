@@ -61,6 +61,18 @@ export async function addProblemToPlaylist(
       return { success: false, error: "Problem not found" };
     }
 
+    const existingRelation = await prisma.problemPlaylist.findFirst({
+      where: {
+        playlistId: playlist.id,
+        problemId: problem.id,
+      },
+      select: { id: true },
+    });
+
+    if (existingRelation) {
+      return { success: true, data: existingRelation };
+    }
+
     const relation = await prisma.problemPlaylist.create({
       data: {
         playlistId: playlist.id,

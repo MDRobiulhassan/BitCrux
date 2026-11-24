@@ -1,12 +1,80 @@
 import "server-only";
 
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import { env } from "@/server/env";
 
 const headers = {
   Authorization: env.JUDGE0_API_KEY,
   "Content-Type": "application/json",
 };
+
+const REQUEST_TIMEOUT_MS = 15_000;
+
+export class CompilerServiceUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CompilerServiceUnavailableError";
+  }
+}
+
+async function requestCompiler<T>(options: AxiosRequestConfig): Promise<T> {
+  try {
+    const { data } = await axios.request<T>({
+      ...options,
+      timeout: REQUEST_TIMEOUT_MS,
+    });
+
+    return data;
+  } catch (error) {
+    const code = axios.isAxiosError(error) ? error.code : undefined;
+    const status = axios.isAxiosError(error)
+      ? error.response?.status
+      : undefined;
+
+    console.error("Compiler service request failed:", { code, status });
+
+    if (
+      code &&
+      [
+        "ECONNABORTED",
+        "ECONNREFUSED",
+        "ECONNRESET",
+        "ETIMEDOUT",
+        "EHOSTUNREACH",
+        "ENETUNREACH",
+        "EAI_AGAIN",
+      ].includes(code)
+    ) {
+      throw new CompilerServiceUnavailableError(
+        `OnlineCompiler could not be reached (${code}).`,
+      );
+    }
+
+    if (status === 429) {
+      throw new CompilerServiceUnavailableError(
+        "OnlineCompiler rate limit was reached (HTTP 429).",
+      );
+    }
+
+    if (status && status >= 500) {
+      throw new CompilerServiceUnavailableError(
+        `OnlineCompiler is temporarily unavailable (HTTP ${status}).`,
+      );
+    }
+
+    if (status === 401 || status === 403) {
+      throw new Error(
+        `OnlineCompiler rejected the API credentials (HTTP ${status}).`,
+      );
+    }
+
+    if (status) {
+      throw new Error(`OnlineCompiler request failed (HTTP ${status}).`);
+    }
+
+    throw new Error("OnlineCompiler request failed.");
+  }
+}
 
 export function getLanguageName(languageId: number) {
   const LANGUAGE_NAME = {
@@ -79,9 +147,7 @@ export async function submitBatch(submissions: Judge0Submission[]) {
     },
   };
 
-  const { data } = await axios.request<Judge0SubmitResponse[]>(options);
-
-  return data;
+  return requestCompiler<Judge0SubmitResponse[]>(options);
 }
 
 export async function pollBatchResults(tokens: string[]) {
@@ -100,8 +166,9 @@ export async function pollBatchResults(tokens: string[]) {
       headers,
     };
 
-    const { data } = await axios.request<{ submissions: Judge0Result[] }>(options);
-
+    const data = await requestCompiler<{ submissions: Judge0Result[] }>(
+      options,
+    );
     const results = data.submissions;
 
     const isAllDone = results.every(
@@ -113,7 +180,9 @@ export async function pollBatchResults(tokens: string[]) {
     await sleep(1000);
   }
 
-  throw new Error("Judge0 submission polling timed out");
+  throw new CompilerServiceUnavailableError(
+    "OnlineCompiler timed out while checking the reference solutions.",
+  );
 }
 
 const sleep = (ms: number) =>

@@ -29,6 +29,16 @@ export async function getAllProblems() {
               : { userId: "" },
             select: { problemId: true },
           },
+          problemPlaylists: {
+            where: clerkUser
+              ? {
+                  playlist: {
+                    is: { user: { is: { clerkId: clerkUser.id } } },
+                  },
+                }
+              : { playlistId: "" },
+            select: { id: true },
+          },
         },
         orderBy: { createdAt: "desc" },
       }),
@@ -45,10 +55,13 @@ export async function getAllProblems() {
         : Promise.resolve(null),
     ]);
 
-    const problems: ProblemListItem[] = rows.map(({ solvedBy, ...problem }) => ({
-      ...problem,
-      isSolved: solvedBy.length > 0,
-    }));
+    const problems: ProblemListItem[] = rows.map(
+      ({ solvedBy, problemPlaylists, ...problem }) => ({
+        ...problem,
+        isSolved: solvedBy.length > 0,
+        isSaved: problemPlaylists.length > 0,
+      }),
+    );
 
     return {
       success: true as const,

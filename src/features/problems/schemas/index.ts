@@ -134,11 +134,19 @@ int main() {
 export const LANGUAGES = ["CPP", "PYTHON", "JAVA"] as const;
 
 export const DIFFICULTY_OPTIONS = [
-  { value: "Easy", label: "Easy", className: "bg-green-100 text-green-800" },
+  {
+    value: "Easy",
+    label: "Easy",
+    className: "text-green-600 dark:text-green-400",
+  },
   {
     value: "Medium",
     label: "Medium",
-    className: "bg-amber-100 text-amber-800",
+    className: "text-yellow-600 dark:text-yellow-400",
   },
-  { value: "Hard", label: "Hard", className: "bg-red-100 text-red-800" },
+  {
+    value: "Hard",
+    label: "Hard",
+    className: "text-red-600 dark:text-red-400",
+  },
 ] as const;

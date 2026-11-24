@@ -17,7 +17,13 @@ export async function getCurrentUserData() {
       where: { clerkId: user.id },
       include: {
         submissions: true,
-        solvedProblems: true,
+        solvedProblems: {
+          include: {
+            problem: {
+              select: { slug: true, title: true },
+            },
+          },
+        },
         playlists: true,
       },
     });

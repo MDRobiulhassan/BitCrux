@@ -14,7 +14,7 @@ import type { Problem } from "@/generated/prisma/client";
 const ProblemWorkspace = ({ problem }: { problem: Problem }) => {
   const { isLoaded: authLoaded, isSignedIn } = useUser();
   const isAuthenticated = authLoaded && Boolean(isSignedIn);
-  const { submissionHistory } = useSubmissionHistory(
+  const { submissionHistory, addSubmission } = useSubmissionHistory(
     problem.id,
     isAuthenticated,
   );
@@ -29,7 +29,7 @@ const ProblemWorkspace = ({ problem }: { problem: Problem }) => {
     executionResponse,
     handleRun,
     handleSubmit,
-  } = useEditor(problem);
+  } = useEditor(problem, "CPP", addSubmission);
 
   return (
     <div className="min-h-screen bg-background">

@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { getAllProblems } from "@/features/problems/actions/get-problems";
 import { ProblemsTable } from "@/features/problems";
+
+export const metadata: Metadata = {
+  title: "Problems",
+  description: "Browse coding problems by difficulty and topic.",
+};
 
 const ProblemPage = async () => {
   const result = await getAllProblems();

@@ -7,6 +7,7 @@ export type ProblemListItem = Pick<
   "id" | "slug" | "title" | "tags" | "difficulty"
 > & {
   isSolved: boolean;
+  isSaved: boolean;
 };
 
 interface ProblemTestCase {

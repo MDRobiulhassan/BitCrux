@@ -23,7 +23,7 @@ export function CreateProblemForm() {
   } = useCreateProblem();
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
+    <div className="w-full">
       <Card className="shadow-xl">
         <FormHeader
           sampleType={sampleType}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bookmark, PencilIcon, TrashIcon } from "lucide-react";
+import { Bookmark, Check, PencilIcon, TrashIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import type { ProblemListItem } from "@/features/problems/types";
 interface ProblemRowProps {
   problem: ProblemListItem;
   user?: Pick<User, "role"> | null;
+  isSaved: boolean;
   onDelete: (problemId: string) => void;
   onSave: (problemId: string) => void;
 }
@@ -25,6 +26,7 @@ interface ProblemRowProps {
 export function ProblemRow({
   problem,
   user,
+  isSaved,
   onDelete,
   onSave,
 }: ProblemRowProps) {
@@ -51,6 +53,7 @@ export function ProblemRow({
           <ActionButtons
             problemId={problem.id}
             isAdmin={user.role === "ADMIN"}
+            isSaved={isSaved}
             onDelete={onDelete}
             onSave={onSave}
           />
@@ -125,6 +128,7 @@ function DifficultyBadge({ difficulty }: DifficultyBadgeProps) {
 interface ActionButtonsProps {
   problemId: string;
   isAdmin: boolean;
+  isSaved: boolean;
   onDelete: (problemId: string) => void;
   onSave: (problemId: string) => void;
 }
@@ -132,6 +136,7 @@ interface ActionButtonsProps {
 function ActionButtons({
   problemId,
   isAdmin,
+  isSaved,
   onDelete,
   onSave,
 }: ActionButtonsProps) {
@@ -154,13 +159,18 @@ function ActionButtons({
       )}
 
       <Button
-        variant="outline"
+        variant={isSaved ? "secondary" : "outline"}
         size="sm"
         onClick={() => onSave(problemId)}
         className="gap-2"
+        aria-label={isSaved ? "Add to another playlist" : "Save to playlist"}
       >
-        <Bookmark className="h-4 w-4" />
-        <span className="hidden sm:inline">Save</span>
+        {isSaved ? (
+          <Check className="h-4 w-4" />
+        ) : (
+          <Bookmark className="h-4 w-4" />
+        )}
+        <span className="hidden sm:inline">{isSaved ? "Saved" : "Save"}</span>
       </Button>
     </div>
   );

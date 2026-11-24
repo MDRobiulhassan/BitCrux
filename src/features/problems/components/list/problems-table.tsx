@@ -32,7 +32,9 @@ interface ProblemsTableProps {
 const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
   const filters = useProblemFilters({ problems });
   const pagination = usePagination(filters.filteredProblems);
-  const playlist = usePlaylistAction();
+  const playlist = usePlaylistAction(
+    problems.filter((problem) => problem.isSaved).map((problem) => problem.id),
+  );
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 p-6">
@@ -70,6 +72,7 @@ const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
                     key={problem.id}
                     problem={problem}
                     user={user}
+                    isSaved={playlist.savedProblemIds.has(problem.id)}
                     onDelete={() => {}}
                     onSave={playlist.openAddToPlaylist}
                   />

@@ -16,6 +16,7 @@ export async function getAllSubmissionByCurrentUserForProblem(
 
   const submissions = await prisma.submission.findMany({
     where: { problemId, userId: user.id },
+    orderBy: { createdAt: "desc" },
   });
 
   return { success: true as const, data: submissions };

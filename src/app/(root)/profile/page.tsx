@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getCurrentUserData } from "@/features/auth/actions/get-current-user-data";
 import { SubmissionHistory } from "@/features/submissions";
 import {
@@ -8,6 +9,11 @@ import {
 } from "@/features/profile";
 import React from "react";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Profile",
+  description: "View your coding progress, submissions, and playlists.",
+};
 
 const ProfilePage = async () => {
   const profileData = await getCurrentUserData();

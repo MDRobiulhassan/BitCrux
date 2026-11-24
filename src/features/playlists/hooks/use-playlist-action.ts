@@ -4,12 +4,15 @@ import type { CreatePlaylistData } from "@/features/playlists/types";
 import { createPlaylist } from "@/features/playlists/actions/create-playlist";
 import { addProblemToPlaylist } from "@/features/playlists/actions/add-problem-to-playlist";
 
-export function usePlaylistAction() {
+export function usePlaylistAction(initialSavedProblemIds: string[] = []) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] =
     useState(false);
   const [selectedProblemId, setSelectedProblemId] = useState<string | null>(
     null,
+  );
+  const [savedProblemIds, setSavedProblemIds] = useState(
+    () => new Set(initialSavedProblemIds),
   );
 
   const handleCreatePlaylist = async (data: CreatePlaylistData) => {
@@ -42,6 +45,7 @@ export function usePlaylistAction() {
         throw new Error(result.error);
       }
 
+      setSavedProblemIds((current) => new Set(current).add(problemId));
       setIsAddToPlaylistModalOpen(false);
       toast.success("Problem added to playlist");
       return true;
@@ -71,6 +75,7 @@ export function usePlaylistAction() {
 
     isAddToPlaylistModalOpen,
     selectedProblemId,
+    savedProblemIds,
     openAddToPlaylist,
     closeAddToPlaylistModal: () => {
       setIsAddToPlaylistModalOpen(false);

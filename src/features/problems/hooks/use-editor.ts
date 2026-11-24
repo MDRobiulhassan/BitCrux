@@ -9,11 +9,13 @@ import {
   type ProblemLanguage,
 } from "@/features/problems/types";
 import type { Problem } from "@/generated/prisma/client";
+import type { Submission } from "@/generated/prisma/client";
 import type { CodeExecutionResponse } from "@/features/submissions/types";
 
 export function useEditor(
   problem: Problem | null,
   initialLanguage: ProblemLanguage = "CPP",
+  onSubmissionSaved?: (submission: Submission) => void,
 ) {
   const [selectedLanguage, setSelectedLanguage] = useState<ProblemLanguage>(
     initialLanguage,
@@ -142,6 +144,9 @@ export function useEditor(
       );
 
       setExecutionResponse(res);
+      if (res.success && res.submission) {
+        onSubmissionSaved?.(res.submission);
+      }
 
       if (res.success && res.allPassed) {
         toast.success("Accepted! All test cases passed.");
