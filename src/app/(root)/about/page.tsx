@@ -55,8 +55,12 @@ const AboutPage = () => {
                 size="lg"
                 className="bg-amber-500 text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-amber-600 hover:shadow-xl dark:bg-amber-400 dark:text-gray-900 dark:hover:bg-amber-500"
               >
-                <Link href="/problems">
-                  Explore Problems
+                <Link
+                  href="https://mdrobiulhassan.github.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Explore My Work
                   <ArrowRight className="ml-2 size-5" />
                 </Link>
               </Button>
@@ -115,8 +119,8 @@ const AboutPage = () => {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base leading-relaxed">
-                  Work through problems with examples, test cases, and an
-                  editor for C++, Python, and Java.
+                  Work through problems with examples, test cases, and an editor
+                  for C++, Python, and Java.
                 </CardDescription>
               </CardContent>
             </Card>

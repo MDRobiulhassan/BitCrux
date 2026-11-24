@@ -24,9 +24,14 @@ export async function getPlaylists() {
 
     const playlists = await prisma.playlist.findMany({
       where: { userId: user.id },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        createdAt: true,
+        updatedAt: true,
         problemPlaylists: {
-          include: {
+          select: {
             problem: {
               select: { id: true, title: true, difficulty: true },
             },

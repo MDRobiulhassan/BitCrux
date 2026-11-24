@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "BitCrux — Coding Practice",
+    default: "BitCrux - Coding Practice",
     template: "%s | BitCrux",
   },
   description:

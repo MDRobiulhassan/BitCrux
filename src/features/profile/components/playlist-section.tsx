@@ -1,5 +1,6 @@
 import React from "react";
-import { List, Calendar, FileText } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, List, Calendar, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Playlist } from "@/generated/prisma/client";
@@ -24,6 +25,15 @@ const PlaylistsSection = ({ playlists }: PlaylistsSectionProps) => {
           <List className="w-6 h-6 text-blue-500" />
           <CardTitle className="text-2xl">Playlists</CardTitle>
           <Badge variant="secondary">{playlists.length}</Badge>
+          {playlists.length > 0 && (
+            <Link
+              href="/playlists"
+              className="ml-auto inline-flex items-center gap-1 text-sm text-primary hover:underline"
+            >
+              View all
+              <ArrowRight className="size-4" />
+            </Link>
+          )}
         </div>
       </CardHeader>
       <CardContent>
@@ -36,43 +46,57 @@ const PlaylistsSection = ({ playlists }: PlaylistsSectionProps) => {
             <p className="text-muted-foreground">
               Create your first playlist to organize your problems!
             </p>
+            <Link
+              href="/problems"
+              className="mt-3 inline-block text-sm text-primary hover:underline"
+            >
+              Browse problems
+            </Link>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {playlists.map((playlist) => (
-              <Card
+              <Link
                 key={playlist.id}
-                className="hover:shadow-md transition-all duration-200 bg-blue-50 dark:bg-blue-950/50 group"
+                href={`/playlists/${playlist.id}`}
+                className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-3 mb-4">
-                    <div className="bg-blue-100 dark:bg-blue-900 rounded-full p-3 group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors">
-                      <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {playlist.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {playlist.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-4 space-y-2">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Calendar className="w-3 h-3" />
-                      <span>Created {formatDate(playlist.createdAt)}</span>
-                    </div>
-                    {playlist.createdAt !== playlist.updatedAt && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        <span>Updated {formatDate(playlist.updatedAt)}</span>
+                <Card className="h-full bg-blue-50 transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-md dark:bg-blue-950/50">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-3">
+                      <div className="rounded-full bg-blue-100 p-3 transition-colors group-hover:bg-blue-200 dark:bg-blue-900 dark:group-hover:bg-blue-800">
+                        <FileText className="size-5 text-blue-600 dark:text-blue-400" />
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="mb-2 font-bold transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                          {playlist.name}
+                        </h3>
+                        <p className="text-sm leading-relaxed text-muted-foreground">
+                          {playlist.description || "Personal problem collection"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 space-y-2 border-t pt-4">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Calendar className="size-3" />
+                        <span>Created {formatDate(playlist.createdAt)}</span>
+                      </div>
+                      {playlist.createdAt.getTime() !==
+                        playlist.updatedAt.getTime() && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Calendar className="size-3" />
+                          <span>Updated {formatDate(playlist.updatedAt)}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-4 flex items-center gap-2 text-sm text-primary">
+                      Open playlist
+                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         )}

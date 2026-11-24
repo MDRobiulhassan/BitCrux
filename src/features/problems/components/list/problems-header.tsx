@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import Link from "next/link";
+import { List, Plus } from "lucide-react";
 
 interface ProblemsHeaderProps {
   onCreatePlaylist: () => void;
@@ -19,12 +20,22 @@ export function ProblemsHeader({
         <p className="text-muted-foreground">Find and solve coding problems</p>
       </div>
 
-      {canCreatePlaylist && (
-        <Button onClick={onCreatePlaylist} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Create Playlist
-        </Button>
-      )}
+      <div className="flex flex-wrap gap-2">
+        {canCreatePlaylist && (
+          <>
+            <Button asChild variant="outline" className="gap-2">
+              <Link href="/playlists">
+                <List className="h-4 w-4" />
+                My Playlists
+              </Link>
+            </Button>
+            <Button onClick={onCreatePlaylist} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Create Playlist
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
