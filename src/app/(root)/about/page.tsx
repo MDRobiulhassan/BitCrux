@@ -82,7 +82,7 @@ const AboutPage = () => {
           <div className="mx-auto w-full max-w-sm">
             <div className="rotate-2 rounded-3xl bg-gradient-to-br from-amber-400 to-indigo-500 p-2 shadow-2xl">
               <Image
-                src="/me.jpg"
+                src="/me-v2.jpg"
                 alt="Robiul Hassan"
                 width={312}
                 height={416}
