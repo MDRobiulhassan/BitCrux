@@ -1,6 +1,6 @@
 import type { Submission } from "@/generated/prisma/client";
 
-export interface ExecutionTestCaseResult {
+interface ExecutionTestCaseResult {
   testCase: number;
   passed: boolean;
   stdout: string | null;

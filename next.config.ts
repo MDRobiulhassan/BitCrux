@@ -14,11 +14,6 @@ const nextConfig: NextConfig = {
         destination: "/problems/:id",
         permanent: true,
       },
-      {
-        source: "/api/playlist",
-        destination: "/api/playlists",
-        permanent: true,
-      },
     ];
   },
   experimental: {

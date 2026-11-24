@@ -1,9 +1,11 @@
 import { getCurrentUserData } from "@/features/auth/actions/get-current-user-data";
-import { SubmissionHistory } from "@/features/submissions/components/submit-history";
-import PlaylistsSection from "@/features/profile/components/playlist-section";
-import ProfileStats from "@/features/profile/components/profile-stats";
-import SolvedProblems from "@/features/profile/components/solved-problems";
-import UserInfoCard from "@/features/profile/components/user-info-card";
+import { SubmissionHistory } from "@/features/submissions";
+import {
+  PlaylistSection,
+  ProfileStats,
+  SolvedProblems,
+  UserInfoCard,
+} from "@/features/profile";
 import React from "react";
 import { redirect } from "next/navigation";
 
@@ -29,7 +31,7 @@ const ProfilePage = async () => {
 
         <div className="grid gap-8">
           <SolvedProblems solvedProblems={profileData.solvedProblems} />
-          <PlaylistsSection playlists={profileData.playlists} />
+          <PlaylistSection playlists={profileData.playlists} />
         </div>
       </div>
     </div>

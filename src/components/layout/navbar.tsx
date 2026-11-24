@@ -2,13 +2,13 @@
 
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
-import { UserRole } from "@/generated/prisma/browser";
+import type { AuthRole } from "@/features/auth";
 import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 
 interface NavbarProps {
-  userRole: UserRole | null;
+  userRole: AuthRole | null;
 }
 
 const Navbar = ({ userRole }: NavbarProps) => {
@@ -55,7 +55,7 @@ const Navbar = ({ userRole }: NavbarProps) => {
               <>
                 {isSignedIn ? (
                   <>
-                    {userRole === UserRole.ADMIN && (
+                    {userRole === "ADMIN" && (
                       <Link href="/problems/create">
                         <Button variant="outline" size="default">
                           Create Problem

@@ -4,7 +4,7 @@ const LANGUAGE_IDS = {
   PYTHON: 71,
 } as const;
 
-export type SupportedLanguage = keyof typeof LANGUAGE_IDS;
+type SupportedLanguage = keyof typeof LANGUAGE_IDS;
 
 export function getJudge0LanguageId(language: string) {
   const normalizedLanguage = language.toUpperCase();

@@ -1,6 +1,6 @@
 import { getCurrentUserData } from "@/features/auth/actions/get-current-user-data";
 import { getAllProblems } from "@/features/problems/actions/get-problems";
-import ProblemsTable from "@/features/problems/components/list/problems-table";
+import { ProblemsTable } from "@/features/problems";
 
 const ProblemPage = async () => {
   const user = await getCurrentUserData();

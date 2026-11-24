@@ -2,12 +2,6 @@ export const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
 
 export const ITEMS_PER_PAGE = 5;
 
-export const DEFAULT_FILTERS = {
-  search: "",
-  difficulty: "All",
-  tag: "All",
-};
-
 export const DIFFICULTY_COLORS = {
   EASY: "bg-green-100 text-green-800 hover:bg-green-100",
   MEDIUM: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",

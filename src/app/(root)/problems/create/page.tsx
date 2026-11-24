@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CreateProblemForm } from "@/features/problems/components/create-form";
+import { CreateProblemForm } from "@/features/problems";
 
 const CreateProblemPage = async () => {
   const access = await requireAdmin();

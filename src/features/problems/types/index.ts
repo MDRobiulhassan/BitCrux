@@ -1,6 +1,6 @@
 export type ProblemLanguage = "CPP" | "PYTHON" | "JAVA";
 
-export interface ProblemTestCase {
+interface ProblemTestCase {
   input: string;
   output: string;
 }

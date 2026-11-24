@@ -31,7 +31,7 @@ export interface Judge0SubmitResponse {
   token: string;
 }
 
-export interface Judge0Status {
+interface Judge0Status {
   id: number;
   description: string;
 }
@@ -116,5 +116,5 @@ export async function pollBatchResults(tokens: string[]) {
   throw new Error("Judge0 submission polling timed out");
 }
 
-export const sleep = (ms: number) =>
+const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));

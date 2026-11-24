@@ -1,5 +1,5 @@
 import { getProblemById } from "@/features/problems/actions/get-problem";
-import ProblemWorkspace from "@/features/problems/components/workspace/problem-workspace";
+import { ProblemWorkspace } from "@/features/problems";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";

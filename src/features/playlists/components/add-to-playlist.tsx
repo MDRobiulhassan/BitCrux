@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
+import { getPlaylists } from "@/features/playlists/actions/get-playlists";
 
 interface Playlist {
   id: string;
@@ -38,14 +39,13 @@ const AddToPlaylistModal = ({
   useEffect(() => {
     const loadPlaylist = async () => {
       try {
-        const response = await fetch("/api/playlists");
-        const data = await response.json();
+        const result = await getPlaylists();
 
-        if (!response.ok || !data.success) {
-          throw new Error(data.error || "Failed to load playlists");
+        if (!result.success) {
+          throw new Error(result.error);
         }
 
-        setPlaylists(data.playlists);
+        setPlaylists(result.data);
       } catch (error) {
         console.error("Error loading playlists:", error);
         toast.error("Failed to load playlists");
