@@ -2,23 +2,58 @@
 
 import "server-only";
 
-import { getCurrentUserData } from "@/features/auth/actions/get-current-user-data";
+import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db";
+import type { ProblemListItem } from "@/features/problems/types";
 
 export async function getAllProblems() {
   try {
-    const user = await getCurrentUserData();
-
-    if (!user || !("id" in user)) {
-      return { success: false as const, error: "Unauthorized" };
+    let clerkUser = null;
+    try {
+      clerkUser = await currentUser();
+    } catch (error) {
+      console.error("Unable to load optional problem-list user:", error);
     }
 
-    const problems = await prisma.problem.findMany({
-      include: { solvedBy: true },
-      orderBy: { createdAt: "desc" },
-    });
+    const [rows, user] = await Promise.all([
+      prisma.problem.findMany({
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          tags: true,
+          difficulty: true,
+          solvedBy: {
+            where: clerkUser
+              ? { user: { is: { clerkId: clerkUser.id } } }
+              : { userId: "" },
+            select: { problemId: true },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+      clerkUser
+        ? prisma.user
+            .findUnique({
+              where: { clerkId: clerkUser.id },
+              select: { role: true },
+            })
+            .catch((error) => {
+              console.error("Unable to load optional problem-list role:", error);
+              return null;
+            })
+        : Promise.resolve(null),
+    ]);
 
-    return { success: true as const, data: problems };
+    const problems: ProblemListItem[] = rows.map(({ solvedBy, ...problem }) => ({
+      ...problem,
+      isSolved: solvedBy.length > 0,
+    }));
+
+    return {
+      success: true as const,
+      data: { problems, user: user ? { role: user.role } : null },
+    };
   } catch (error) {
     console.error("Error fetching problems:", error);
     return { success: false as const, error: "Failed to fetch problems" };

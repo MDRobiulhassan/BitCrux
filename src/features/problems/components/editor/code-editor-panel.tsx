@@ -27,6 +27,8 @@ interface CodeEditorPanelProps {
   onSubmit: () => void;
   isRunning: boolean;
   isSubmitting: boolean;
+  isAuthenticated: boolean;
+  authLoaded: boolean;
 }
 
 const CodeEditorPanel = ({
@@ -38,6 +40,8 @@ const CodeEditorPanel = ({
   onSubmit,
   isRunning,
   isSubmitting,
+  isAuthenticated,
+  authLoaded,
 }: CodeEditorPanelProps) => {
   const { theme } = useTheme();
 
@@ -79,7 +83,7 @@ const CodeEditorPanel = ({
         <div className="flex gap-3 mt-4">
           <Button
             onClick={onRun}
-            disabled={isRunning}
+            disabled={!isAuthenticated || isRunning}
             variant={"outline"}
             className="flex items-center gap-2"
           >
@@ -89,13 +93,18 @@ const CodeEditorPanel = ({
           <Button
             variant={"default"}
             onClick={onSubmit}
-            disabled={isSubmitting}
+            disabled={!isAuthenticated || isSubmitting}
             className="flex items-center gap-2"
           >
             <Send className="h-4 w-4" />
             {isSubmitting ? "Submitting..." : "Submit"}
           </Button>
         </div>
+        {authLoaded && !isAuthenticated && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            Sign in to run or submit code.
+          </p>
+        )}
       </CardContent>
     </Card>
   );

@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import type { Problem } from "@/generated/prisma/client";
+import type { ProblemListItem } from "@/features/problems/types";
 
 interface UseProblemFiltersProps {
-  problems?: Problem[];
+  problems?: ProblemListItem[];
 }
 
 export function useProblemFilters({ problems = [] }: UseProblemFiltersProps) {

@@ -16,7 +16,8 @@ import {
 
 import { Card, CardContent } from "@/components/ui/card";
 import { ProblemsPagination } from "./problems-pagination";
-import type { Problem, User } from "@/generated/prisma/client";
+import type { User } from "@/generated/prisma/client";
+import type { ProblemListItem } from "@/features/problems/types";
 import {
   AddToPlaylistModal,
   CreatePlaylistModal,
@@ -24,7 +25,7 @@ import {
 } from "@/features/playlists";
 
 interface ProblemsTableProps {
-  problems?: Problem[];
+  problems?: ProblemListItem[];
   user?: Pick<User, "role"> | null;
 }
 
@@ -35,7 +36,10 @@ const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 p-6">
-      <ProblemsHeader onCreatePlaylist={playlist.openCreateModal} />
+      <ProblemsHeader
+        onCreatePlaylist={playlist.openCreateModal}
+        canCreatePlaylist={Boolean(user)}
+      />
       <ProblemsFilters
         search={filters.search}
         onSearchChange={filters.setSearch}
@@ -55,7 +59,7 @@ const ProblemsTable = ({ problems = [], user }: ProblemsTableProps) => {
                 <TableHead>Title</TableHead>
                 <TableHead>Tags</TableHead>
                 <TableHead className="w-[120px]">Difficulty</TableHead>
-                <TableHead className="w-[200px]">Actions</TableHead>
+                {user && <TableHead className="w-[200px]">Actions</TableHead>}
               </TableRow>
             </TableHeader>
 

@@ -9,6 +9,7 @@ import { prisma } from "@/server/db";
 import { Difficulty } from "@/generated/prisma/client";
 import { pollBatchResults, submitBatch } from "@/server/services/judge0";
 import type { ServerResult } from "@/types";
+import { createProblemSlug } from "@/features/problems/utils/problem-slug";
 
 const difficultyMap = {
   Easy: Difficulty.EASY,
@@ -94,25 +95,68 @@ export async function createProblem(
       }
     }
 
-    const problem = await prisma.problem.create({
-      data: {
-        title: values.title,
-        description: values.description,
-        difficulty: difficultyMap[values.difficulty],
-        tags: values.tags,
-        examples: JSON.parse(JSON.stringify(values.examples)),
-        constraints: values.constraints,
-        hints: values.hints || null,
-        editorial: values.editorial || null,
-        testCases: JSON.parse(JSON.stringify(testCases)),
-        codeSnippets: JSON.parse(JSON.stringify(values.codeSnippets)),
-        referenceSolutions: JSON.parse(
-          JSON.stringify(values.referenceSolutions),
-        ),
-        userId: access.user.id,
+    const baseSlug = createProblemSlug(values.title);
+    const existingSlugs = await prisma.problem.findMany({
+      where: {
+        OR: [
+          { slug: baseSlug },
+          { slug: { startsWith: `${baseSlug}-` } },
+        ],
       },
-      select: { id: true },
+      select: { slug: true },
     });
+    const usedSlugs = new Set(existingSlugs.map(({ slug }) => slug));
+    let slug = baseSlug;
+    let suffix = 2;
+
+    while (usedSlugs.has(slug)) {
+      slug = `${baseSlug}-${suffix}`;
+      suffix += 1;
+    }
+
+    let problem: { id: string } | undefined;
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      try {
+        problem = await prisma.problem.create({
+          data: {
+            slug,
+            title: values.title,
+            description: values.description,
+            difficulty: difficultyMap[values.difficulty],
+            tags: values.tags,
+            examples: JSON.parse(JSON.stringify(values.examples)),
+            constraints: values.constraints,
+            hints: values.hints || null,
+            editorial: values.editorial || null,
+            testCases: JSON.parse(JSON.stringify(testCases)),
+            codeSnippets: JSON.parse(JSON.stringify(values.codeSnippets)),
+            referenceSolutions: JSON.parse(
+              JSON.stringify(values.referenceSolutions),
+            ),
+            userId: access.user.id,
+          },
+          select: { id: true },
+        });
+        break;
+      } catch (error) {
+        if (
+          typeof error !== "object" ||
+          error === null ||
+          !("code" in error) ||
+          error.code !== "P2002"
+        ) {
+          throw error;
+        }
+
+        slug = `${baseSlug}-${suffix}`;
+        suffix += 1;
+      }
+    }
+
+    if (!problem) {
+      throw new Error("Unable to generate a unique problem URL.");
+    }
 
     return { success: true, data: problem };
   } catch (error) {

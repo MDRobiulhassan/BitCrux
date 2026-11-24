@@ -12,12 +12,11 @@ import {
   DIFFICULTY_COLORS,
   getDifficultyColor,
 } from "../../constants";
-import type { Problem, User } from "@/generated/prisma/client";
+import type { User } from "@/generated/prisma/client";
+import type { ProblemListItem } from "@/features/problems/types";
 
 interface ProblemRowProps {
-  problem: Problem & {
-    solvedBy?: unknown[];
-  };
+  problem: ProblemListItem;
   user?: Pick<User, "role"> | null;
   onDelete: (problemId: string) => void;
   onSave: (problemId: string) => void;
@@ -29,16 +28,14 @@ export function ProblemRow({
   onDelete,
   onSave,
 }: ProblemRowProps) {
-  const isSolved = (problem.solvedBy?.length ?? 0) > 0;
-
   return (
     <TableRow>
       <TableCell>
-        <SolvedCheckbox checked={isSolved} />
+        <SolvedCheckbox checked={problem.isSolved} />
       </TableCell>
 
       <TableCell className="font-medium">
-        <ProblemTitle id={problem.id} title={problem.title} />
+        <ProblemTitle slug={problem.slug} title={problem.title} />
       </TableCell>
 
       <TableCell>
@@ -49,14 +46,16 @@ export function ProblemRow({
         <DifficultyBadge difficulty={problem.difficulty} />
       </TableCell>
 
-      <TableCell>
-        <ActionButtons
-          problemId={problem.id}
-          isAdmin={user?.role === "ADMIN"}
-          onDelete={onDelete}
-          onSave={onSave}
-        />
-      </TableCell>
+      {user && (
+        <TableCell>
+          <ActionButtons
+            problemId={problem.id}
+            isAdmin={user.role === "ADMIN"}
+            onDelete={onDelete}
+            onSave={onSave}
+          />
+        </TableCell>
+      )}
     </TableRow>
   );
 }
@@ -76,14 +75,14 @@ function SolvedCheckbox({ checked }: SolvedCheckboxProps) {
 }
 
 interface ProblemTitleProps {
-  id: string;
+  slug: string;
   title: string;
 }
 
-function ProblemTitle({ id, title }: ProblemTitleProps) {
+function ProblemTitle({ slug, title }: ProblemTitleProps) {
   return (
     <Link
-      href={`/problems/${id}`}
+      href={`/problems/${slug}`}
       className="text-primary hover:underline transition-colors"
     >
       {title}

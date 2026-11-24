@@ -1,5 +1,6 @@
 "use client";
 
+import { useUser } from "@clerk/nextjs";
 import { useEditor } from "@/features/problems/hooks/use-editor";
 import { useSubmissionHistory } from "@/features/submissions";
 import CodeEditorPanel from "@/features/problems/components/editor/code-editor-panel";
@@ -11,7 +12,12 @@ import TestCasesPanel from "@/features/problems/components/editor/testcases-pane
 import type { Problem } from "@/generated/prisma/client";
 
 const ProblemWorkspace = ({ problem }: { problem: Problem }) => {
-  const { submissionHistory } = useSubmissionHistory(problem.id);
+  const { isLoaded: authLoaded, isSignedIn } = useUser();
+  const isAuthenticated = authLoaded && Boolean(isSignedIn);
+  const { submissionHistory } = useSubmissionHistory(
+    problem.id,
+    isAuthenticated,
+  );
 
   const {
     selectedLanguage,
@@ -51,6 +57,8 @@ const ProblemWorkspace = ({ problem }: { problem: Problem }) => {
               onSubmit={handleSubmit}
               isRunning={isRunning}
               isSubmitting={isSubmitting}
+              isAuthenticated={isAuthenticated}
+              authLoaded={authLoaded}
             />
 
             <TestCasesPanel

@@ -1,4 +1,3 @@
-import { ModeToggle } from "@/components/mode-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -13,7 +12,7 @@ interface ProblemHeaderProps {
 
 export function ProblemHeader({ problem }: ProblemHeaderProps) {
   return (
-    <div className="mb-6 flex items-start justify-between">
+    <div className="mb-6">
       <div>
         <div className="mb-4 flex items-center gap-4">
           <Link href="/problems">
@@ -43,8 +42,6 @@ export function ProblemHeader({ problem }: ProblemHeaderProps) {
           ))}
         </div>
       </div>
-
-      <ModeToggle />
     </div>
   );
 }

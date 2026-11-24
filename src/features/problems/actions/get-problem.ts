@@ -10,7 +10,12 @@ export async function getProblemById(
   id: string,
 ): Promise<ServerResult<Problem | null>> {
   try {
-    const problem = await prisma.problem.findUnique({ where: { id } });
+    const [problemBySlug, problemById] = await Promise.all([
+      prisma.problem.findUnique({ where: { slug: id } }),
+      prisma.problem.findUnique({ where: { id } }),
+    ]);
+    const problem = problemBySlug ?? problemById;
+
     return { success: true as const, data: problem };
   } catch (error) {
     console.error("Error fetching problem:", error);

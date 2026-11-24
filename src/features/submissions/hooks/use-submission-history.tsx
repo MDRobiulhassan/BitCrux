@@ -2,14 +2,20 @@ import { useEffect, useState } from "react";
 import { getAllSubmissionByCurrentUserForProblem } from "@/features/submissions/actions/get-submission-history";
 import type { Submission } from "@/generated/prisma/client";
 
-export function useSubmissionHistory(id: string) {
+export function useSubmissionHistory(id: string, enabled = true) {
   const [submissionHistory, setSubmissionHistory] = useState<Submission[]>([]);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
+    let active = true;
+
     const fetchSubmissionHistory = async () => {
       try {
         const response = await getAllSubmissionByCurrentUserForProblem(id);
-        if (response.success) {
+        if (active && response.success) {
           setSubmissionHistory(response.data);
         }
       } catch (error) {
@@ -18,9 +24,13 @@ export function useSubmissionHistory(id: string) {
     };
 
     fetchSubmissionHistory();
-  }, [id]);
+
+    return () => {
+      active = false;
+    };
+  }, [enabled, id]);
 
   return {
-    submissionHistory,
+    submissionHistory: enabled ? submissionHistory : [],
   };
 }
