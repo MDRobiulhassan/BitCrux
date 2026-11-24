@@ -2,6 +2,25 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  async redirects() {
+    return [
+      {
+        source: "/create-problem",
+        destination: "/problems/create",
+        permanent: true,
+      },
+      {
+        source: "/problem/:id",
+        destination: "/problems/:id",
+        permanent: true,
+      },
+      {
+        source: "/api/playlist",
+        destination: "/api/playlists",
+        permanent: true,
+      },
+    ];
+  },
   experimental: {
     agentFeedback: true,
   },

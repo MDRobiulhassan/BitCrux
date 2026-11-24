@@ -43,3 +43,10 @@ next-env.d.ts
 node_modules/
 dist/
 .env
+
+# documentation
+codebase_audit.md
+project-structure.txt
+
+# generated Prisma client
+/src/generated/prisma/
