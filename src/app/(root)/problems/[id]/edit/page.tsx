@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function EditProblemPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ id: string }>;
 }) {
   const access = await requireAdmin();
 
@@ -25,8 +25,8 @@ export default async function EditProblemPage({
     redirect("/");
   }
 
-  const { slug } = await params;
-  const result = await getProblemById(slug);
+  const { id } = await params;
+  const result = await getProblemById(id);
 
   if (!result.success || !result.data) {
     notFound();
