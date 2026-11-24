@@ -22,10 +22,7 @@ const ProblemPage = async () => {
 
   return (
     <div className="container mx-auto py-32">
-      <ProblemsTable
-        problems={result.data.problems}
-        user={result.data.user}
-      />
+      <ProblemsTable problems={result.data.problems} user={result.data.user} />
     </div>
   );
 };

@@ -116,10 +116,7 @@ export async function createProblem(
     const baseSlug = createProblemSlug(values.title);
     const existingSlugs = await prisma.problem.findMany({
       where: {
-        OR: [
-          { slug: baseSlug },
-          { slug: { startsWith: `${baseSlug}-` } },
-        ],
+        OR: [{ slug: baseSlug }, { slug: { startsWith: `${baseSlug}-` } }],
       },
       select: { slug: true },
     });
@@ -188,7 +185,8 @@ export async function createProblem(
     );
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unable to create problem",
+      error:
+        error instanceof Error ? error.message : "Unable to create problem",
     };
   }
 }

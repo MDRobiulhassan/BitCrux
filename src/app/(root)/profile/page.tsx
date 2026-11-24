@@ -7,7 +7,6 @@ import {
   SolvedProblems,
   UserInfoCard,
 } from "@/features/profile";
-import React from "react";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {

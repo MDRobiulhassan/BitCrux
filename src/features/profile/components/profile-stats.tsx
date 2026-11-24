@@ -1,4 +1,3 @@
-import React from "react";
 import { BarChart3, Target, Clock, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { ProfileStatsProps } from "@/features/profile/types";

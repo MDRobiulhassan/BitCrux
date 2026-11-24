@@ -41,13 +41,13 @@ npm install
 
 Create a `.env` file from `.env.example`, then set the values:
 
-| Variable | Description |
-| --- | --- |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
-| `CLERK_SECRET_KEY` | Clerk secret key |
-| `JUDGE0_API_URL` | Judge0 API base URL |
-| `JUDGE0_API_KEY` | Judge0 API key |
+| Variable                            | Description                  |
+| ----------------------------------- | ---------------------------- |
+| `DATABASE_URL`                      | PostgreSQL connection string |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key        |
+| `CLERK_SECRET_KEY`                  | Clerk secret key             |
+| `JUDGE0_API_URL`                    | Judge0 API base URL          |
+| `JUDGE0_API_KEY`                    | Judge0 API key               |
 
 Apply the Prisma migrations to your database:
 
@@ -65,30 +65,30 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Available scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start the development server |
-| `npm run build` | Create a production build |
-| `npm run start` | Start the production server |
-| `npm run lint` | Run ESLint |
+| Command         | Description                  |
+| --------------- | ---------------------------- |
+| `npm run dev`   | Start the development server |
+| `npm run build` | Create a production build    |
+| `npm run start` | Start the production server  |
+| `npm run lint`  | Run ESLint                   |
 
 For production, install dependencies, configure the environment variables, apply migrations with `npx prisma migrate deploy`, build with `npm run build`, and start with `npm run start`.
 
 ## Routes
 
-| Route | Purpose | Access |
-| --- | --- | --- |
-| `/` | Home page | Public |
-| `/about` | About BitCrux | Public |
-| `/problems` | Browse problems | Public |
-| `/problems/[slug]` | View a problem and use the editor | Public; running and submitting code requires sign-in |
-| `/problems/create` | Create a problem | Admin |
-| `/problems/[slug]/edit` | Edit a problem | Admin |
-| `/profile` | View progress, submissions, and playlists | Signed-in user |
-| `/playlists` | Browse personal playlists | Signed-in user |
-| `/playlists/[id]` | View a playlist and its problems | Playlist owner |
-| `/sign-in` | Sign in | Public |
-| `/sign-up` | Create an account | Public |
+| Route                   | Purpose                                   | Access                                               |
+| ----------------------- | ----------------------------------------- | ---------------------------------------------------- |
+| `/`                     | Home page                                 | Public                                               |
+| `/about`                | About BitCrux                             | Public                                               |
+| `/problems`             | Browse problems                           | Public                                               |
+| `/problems/[slug]`      | View a problem and use the editor         | Public; running and submitting code requires sign-in |
+| `/problems/create`      | Create a problem                          | Admin                                                |
+| `/problems/[slug]/edit` | Edit a problem                            | Admin                                                |
+| `/profile`              | View progress, submissions, and playlists | Signed-in user                                       |
+| `/playlists`            | Browse personal playlists                 | Signed-in user                                       |
+| `/playlists/[id]`       | View a playlist and its problems          | Playlist owner                                       |
+| `/sign-in`              | Sign in                                   | Public                                               |
+| `/sign-up`              | Create an account                         | Public                                               |
 
 New users are assigned the `USER` role. Problem creation, editing, and deletion are limited to users with the `ADMIN` role.
 

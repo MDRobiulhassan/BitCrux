@@ -28,9 +28,7 @@ const playlistSchema = z.object({
 interface CreatePlaylistModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (
-    value: z.infer<typeof playlistSchema>,
-  ) => Promise<boolean>;
+  onSubmit: (value: z.infer<typeof playlistSchema>) => Promise<boolean>;
 }
 
 const CreatePlaylistModal = ({
@@ -84,9 +82,7 @@ const CreatePlaylistModal = ({
               className="mt-1"
             />
             {errors.name && (
-              <p className="text-sm text-red-500 mt-1">
-                {errors.name.message}
-              </p>
+              <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
             )}
           </div>
           <div>

@@ -65,7 +65,9 @@ const ProblemWorkspace = ({ problem }: { problem: Problem }) => {
               testCases={
                 Array.isArray(problem.testCases)
                   ? problem.testCases.filter(
-                      (testCase): testCase is { input: string; output: string } =>
+                      (
+                        testCase,
+                      ): testCase is { input: string; output: string } =>
                         typeof testCase === "object" &&
                         testCase !== null &&
                         "input" in testCase &&

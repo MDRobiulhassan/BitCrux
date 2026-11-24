@@ -56,10 +56,7 @@ export async function updateProblem(
       const existingSlugs = await prisma.problem.findMany({
         where: {
           id: { not: id },
-          OR: [
-            { slug: baseSlug },
-            { slug: { startsWith: `${baseSlug}-` } },
-          ],
+          OR: [{ slug: baseSlug }, { slug: { startsWith: `${baseSlug}-` } }],
         },
         select: { slug: true },
       });
@@ -104,7 +101,8 @@ export async function updateProblem(
     );
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unable to update problem",
+      error:
+        error instanceof Error ? error.message : "Unable to update problem",
     };
   }
 }

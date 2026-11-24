@@ -7,9 +7,7 @@ import {
   runCode,
 } from "@/features/submissions/actions/execute-code";
 import { getJudge0LanguageId } from "@/features/problems/constants/languages";
-import {
-  type ProblemLanguage,
-} from "@/features/problems/types";
+import { type ProblemLanguage } from "@/features/problems/types";
 import type { Problem } from "@/generated/prisma/client";
 import type { Submission } from "@/generated/prisma/client";
 import type { CodeExecutionResponse } from "@/features/submissions/types";
@@ -19,9 +17,8 @@ export function useEditor(
   initialLanguage: ProblemLanguage = "CPP",
   onSubmissionSaved?: (submission: Submission) => void,
 ) {
-  const [selectedLanguage, setSelectedLanguage] = useState<ProblemLanguage>(
-    initialLanguage,
-  );
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<ProblemLanguage>(initialLanguage);
 
   const [code, setCode] = useState("");
   const [isRunning, setIsRunning] = useState(false);
@@ -117,11 +114,7 @@ export function useEditor(
         throw new Error("Unsupported programming language.");
       }
 
-      const res = await executeCode(
-        code,
-        languageId,
-        problem.id,
-      );
+      const res = await executeCode(code, languageId, problem.id);
 
       setExecutionResponse(res);
       if (res.success && res.submission) {

@@ -77,9 +77,7 @@ export function useCreateProblem({
   };
 
   const loadSampleData = () => {
-    form.reset(
-      sampleType === "DP" ? sampleProblem : sampleStringProblem,
-    );
+    form.reset(sampleType === "DP" ? sampleProblem : sampleStringProblem);
   };
 
   return {

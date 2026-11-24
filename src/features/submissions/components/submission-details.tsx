@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, CpuIcon, Code, CheckCircle2, XCircle } from "lucide-react";
 import type { Submission } from "@/generated/prisma/client";
@@ -14,11 +20,12 @@ export const SubmissionDetails = ({ submission }: SubmissionDetailsProps) => {
     : [];
   const averageMemory = memoryValues.length
     ? memoryValues.reduce(
-        (sum: number, value) => sum + parseFloat(String(value).replace(" KB", "")),
+        (sum: number, value) =>
+          sum + parseFloat(String(value).replace(" KB", "")),
         0,
       ) / memoryValues.length
     : 0;
-    
+
   const timeValues = submission.time
     ? (JSON.parse(submission.time) as unknown[])
     : [];
@@ -55,21 +62,27 @@ export const SubmissionDetails = ({ submission }: SubmissionDetailsProps) => {
             <Code className="h-4 w-4 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">Language</p>
-              <p className="text-sm text-muted-foreground">{submission.language}</p>
+              <p className="text-sm text-muted-foreground">
+                {submission.language}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <CpuIcon className="h-4 w-4 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">Memory (avg)</p>
-              <p className="text-sm text-muted-foreground">{averageMemory.toFixed(2)} KB</p>
+              <p className="text-sm text-muted-foreground">
+                {averageMemory.toFixed(2)} KB
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">Time (avg)</p>
-              <p className="text-sm text-muted-foreground">{averageTime.toFixed(3)} s</p>
+              <p className="text-sm text-muted-foreground">
+                {averageTime.toFixed(3)} s
+              </p>
             </div>
           </div>
         </div>

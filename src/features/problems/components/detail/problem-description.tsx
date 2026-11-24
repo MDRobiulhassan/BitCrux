@@ -32,9 +32,7 @@ function isExample(value: unknown): value is Example {
   );
 }
 
-export function ProblemDescription({
-  problem,
-}: ProblemDescriptionProps) {
+export function ProblemDescription({ problem }: ProblemDescriptionProps) {
   const examples: Example[] =
     typeof problem.examples === "object" &&
     problem.examples !== null &&

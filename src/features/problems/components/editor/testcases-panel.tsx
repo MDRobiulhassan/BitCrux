@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 interface TestCase {
   input: string;
@@ -15,10 +21,12 @@ const TestCasesPanel = ({ testCases }: TestCasesPanelProps) => {
   }
 
   return (
-     <Card>
+    <Card>
       <CardHeader>
         <CardTitle>Test Cases</CardTitle>
-        <CardDescription>Run your code against these test cases</CardDescription>
+        <CardDescription>
+          Run your code against these test cases
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-48">
@@ -30,27 +38,35 @@ const TestCasesPanel = ({ testCases }: TestCasesPanelProps) => {
         </ScrollArea>
       </CardContent>
     </Card>
-  )
+  );
 };
 
-
-function TestCaseItem({ testCase, index }: { testCase: TestCase; index: number }) {
+function TestCaseItem({
+  testCase,
+  index,
+}: {
+  testCase: TestCase;
+  index: number;
+}) {
   return (
     <div className="border rounded-lg p-3">
       <div className="text-sm font-medium mb-2">Test Case {index + 1}</div>
       <div className="space-y-1 text-sm">
         <div>
           <span className="text-muted-foreground">Input: </span>
-          <code className="bg-muted px-2 py-1 rounded text-xs">{testCase.input}</code>
+          <code className="bg-muted px-2 py-1 rounded text-xs">
+            {testCase.input}
+          </code>
         </div>
         <div>
           <span className="text-muted-foreground">Expected: </span>
-          <code className="bg-muted px-2 py-1 rounded text-xs">{testCase.output}</code>
+          <code className="bg-muted px-2 py-1 rounded text-xs">
+            {testCase.output}
+          </code>
         </div>
       </div>
     </div>
   );
 }
-
 
 export default TestCasesPanel;

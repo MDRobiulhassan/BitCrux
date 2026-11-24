@@ -41,7 +41,8 @@ export async function deleteProblem(
     );
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unable to delete problem",
+      error:
+        error instanceof Error ? error.message : "Unable to delete problem",
     };
   }
 }

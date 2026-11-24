@@ -49,7 +49,10 @@ export async function getAllProblems() {
               select: { role: true },
             })
             .catch((error) => {
-              console.error("Unable to load optional problem-list role:", error);
+              console.error(
+                "Unable to load optional problem-list role:",
+                error,
+              );
               return null;
             })
         : Promise.resolve(null),

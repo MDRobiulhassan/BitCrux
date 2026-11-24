@@ -18,11 +18,7 @@ interface PlaylistListItem {
   problemCount: number;
 }
 
-export function PlaylistList({
-  playlists,
-}: {
-  playlists: PlaylistListItem[];
-}) {
+export function PlaylistList({ playlists }: { playlists: PlaylistListItem[] }) {
   if (playlists.length === 0) {
     return (
       <Card className="mx-auto max-w-xl">

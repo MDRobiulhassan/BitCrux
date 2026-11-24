@@ -83,7 +83,9 @@ async function runAgainstTestCases(
   const tokens = submitResponse.map((response) => response.token);
 
   if (tokens.length !== testCases.length) {
-    throw new Error("Compiler service returned an unexpected number of tokens.");
+    throw new Error(
+      "Compiler service returned an unexpected number of tokens.",
+    );
   }
 
   const results = await pollBatchResults(tokens);
@@ -128,11 +130,17 @@ export async function runCode(
 ) {
   try {
     if (!sourceCode.trim()) {
-      return { success: false as const, error: "Please write some code first." };
+      return {
+        success: false as const,
+        error: "Please write some code first.",
+      };
     }
 
     if (!isSupportedLanguage(languageId)) {
-      return { success: false as const, error: "Unsupported programming language." };
+      return {
+        success: false as const,
+        error: "Unsupported programming language.",
+      };
     }
 
     const context = await getExecutionContext(problemId);
@@ -168,11 +176,17 @@ export async function executeCode(
 ) {
   try {
     if (!sourceCode.trim()) {
-      return { success: false as const, error: "Please write some code first." };
+      return {
+        success: false as const,
+        error: "Please write some code first.",
+      };
     }
 
     if (!isSupportedLanguage(languageId)) {
-      return { success: false as const, error: "Unsupported programming language." };
+      return {
+        success: false as const,
+        error: "Unsupported programming language.",
+      };
     }
 
     const context = await getExecutionContext(problemId);
@@ -195,7 +209,9 @@ export async function executeCode(
           problemId,
           sourceCode,
           language: getLanguageName(languageId),
-          stdin: context.data.testCases.map((testCase) => testCase.input).join("\n"),
+          stdin: context.data.testCases
+            .map((testCase) => testCase.input)
+            .join("\n"),
           stdout: JSON.stringify(
             testCaseResults.map((result) => result.stdout),
           ),
@@ -208,7 +224,9 @@ export async function executeCode(
               )
             : null,
           status: allPassed ? "Accepted" : "Wrong Answer",
-          memory: JSON.stringify(testCaseResults.map((result) => result.memory)),
+          memory: JSON.stringify(
+            testCaseResults.map((result) => result.memory),
+          ),
           time: JSON.stringify(testCaseResults.map((result) => result.time)),
           testCaseResults: {
             create: testCaseResults,
@@ -248,8 +266,7 @@ export async function executeCode(
     logExecutionError("Code submission", error);
     return {
       success: false as const,
-      error:
-        error instanceof Error ? error.message : "Code execution failed.",
+      error: error instanceof Error ? error.message : "Code execution failed.",
     };
   }
 }

@@ -8,10 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableCell, TableRow } from "@/components/ui/table";
 
-import {
-  DIFFICULTY_COLORS,
-  getDifficultyColor,
-} from "../../constants";
+import { DIFFICULTY_COLORS, getDifficultyColor } from "../../constants";
 import type { User } from "@/generated/prisma/client";
 import type { ProblemListItem } from "@/features/problems/types";
 

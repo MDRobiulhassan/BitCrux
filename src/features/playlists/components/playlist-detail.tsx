@@ -3,12 +3,7 @@ import { ArrowLeft, List, Search } from "lucide-react";
 import type { Difficulty } from "@/generated/prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PlaylistProblem {
   id: string;

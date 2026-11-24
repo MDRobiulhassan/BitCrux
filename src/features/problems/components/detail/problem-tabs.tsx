@@ -3,10 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, FileText, Lightbulb } from "lucide-react";
-import {
-  SubmissionHistory,
-  type Submission,
-} from "@/features/submissions";
+import { SubmissionHistory, type Submission } from "@/features/submissions";
 import type { Problem } from "@/generated/prisma/client";
 
 interface ProblemTabsProps {
@@ -47,7 +44,7 @@ export function ProblemTabs({
               <SubmissionHistory submissions={submissionHistory} />
             </div>
           </TabsContent>
-          
+
           <TabsContent value="editorial" className="p-6">
             <div className="py-8 text-muted-foreground whitespace-pre-wrap">
               {problem.editorial || "Editorial not available yet."}

@@ -72,7 +72,8 @@ const PlaylistsSection = ({ playlists }: PlaylistsSectionProps) => {
                           {playlist.name}
                         </h3>
                         <p className="text-sm leading-relaxed text-muted-foreground">
-                          {playlist.description || "Personal problem collection"}
+                          {playlist.description ||
+                            "Personal problem collection"}
                         </p>
                       </div>
                     </div>
