@@ -2,6 +2,10 @@
 
 BitCrux is a coding practice platform for browsing programming problems, writing and running solutions, tracking submissions, and organizing problems into personal playlists.
 
+## Live Demo
+
+[Visit BitCrux](https://https://bitcrux.vercel.app/)
+
 ## Features
 
 - Browse problems and view their descriptions, examples, constraints, and difficulty.
