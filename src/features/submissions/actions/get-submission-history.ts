@@ -2,15 +2,24 @@
 
 import "server-only";
 
-import { getCurrentUserData } from "@/features/auth/actions/get-current-user-data";
+import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db";
 
 export async function getAllSubmissionByCurrentUserForProblem(
   problemId: string,
 ) {
-  const user = await getCurrentUserData();
+  const clerkUser = await currentUser();
 
-  if (!user || !("id" in user)) {
+  if (!clerkUser) {
+    return { success: false as const, data: [] };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { clerkId: clerkUser.id },
+    select: { id: true },
+  });
+
+  if (!user) {
     return { success: false as const, data: [] };
   }
 

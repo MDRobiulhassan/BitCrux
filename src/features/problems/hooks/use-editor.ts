@@ -7,13 +7,15 @@ import {
   runCode,
 } from "@/features/submissions/actions/execute-code";
 import { getJudge0LanguageId } from "@/features/problems/constants/languages";
-import { type ProblemLanguage } from "@/features/problems/types";
-import type { Problem } from "@/generated/prisma/client";
+import {
+  type ProblemLanguage,
+  type PublicProblem,
+} from "@/features/problems/types";
 import type { Submission } from "@/generated/prisma/client";
 import type { CodeExecutionResponse } from "@/features/submissions/types";
 
 export function useEditor(
-  problem: Problem | null,
+  problem: PublicProblem | null,
   initialLanguage: ProblemLanguage = "CPP",
   onSubmissionSaved?: (submission: Submission) => void,
 ) {

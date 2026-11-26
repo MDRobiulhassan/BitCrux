@@ -2,6 +2,8 @@ import type { Problem } from "@/generated/prisma/client";
 
 export type ProblemLanguage = "CPP" | "PYTHON" | "JAVA";
 
+export type PublicProblem = Omit<Problem, "referenceSolutions">;
+
 export type ProblemListItem = Pick<
   Problem,
   "id" | "slug" | "title" | "tags" | "difficulty"

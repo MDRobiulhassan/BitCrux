@@ -6,7 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import type { Playlist } from "@/generated/prisma/client";
 
 interface PlaylistsSectionProps {
-  playlists: Playlist[];
+  playlists: Pick<
+    Playlist,
+    "id" | "name" | "description" | "createdAt" | "updatedAt"
+  >[];
 }
 
 const PlaylistsSection = ({ playlists }: PlaylistsSectionProps) => {

@@ -9,9 +9,9 @@ import { ProblemDescription } from "@/features/problems/components/detail/proble
 import { ProblemHeader } from "@/features/problems/components/detail/problem-header";
 import { ProblemTabs } from "@/features/problems/components/detail/problem-tabs";
 import TestCasesPanel from "@/features/problems/components/editor/testcases-panel";
-import type { Problem } from "@/generated/prisma/client";
+import type { PublicProblem } from "@/features/problems/types";
 
-const ProblemWorkspace = ({ problem }: { problem: Problem }) => {
+const ProblemWorkspace = ({ problem }: { problem: PublicProblem }) => {
   const { isLoaded: authLoaded, isSignedIn } = useUser();
   const isAuthenticated = authLoaded && Boolean(isSignedIn);
   const { submissionHistory, addSubmission } = useSubmissionHistory(

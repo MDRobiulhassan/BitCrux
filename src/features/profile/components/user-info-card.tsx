@@ -5,7 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import type { User as PrismaUser } from "@/generated/prisma/client";
 
 interface UserInfoCardProps {
-  userData: PrismaUser;
+  userData: Pick<
+    PrismaUser,
+    | "firstName"
+    | "lastName"
+    | "imageUrl"
+    | "email"
+    | "role"
+    | "createdAt"
+    | "updatedAt"
+  >;
 }
 
 const UserInfoCard = ({ userData }: UserInfoCardProps) => {

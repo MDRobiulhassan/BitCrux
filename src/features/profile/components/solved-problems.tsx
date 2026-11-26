@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import type { Problem, ProblemSolved } from "@/generated/prisma/client";
 
-type SolvedProblemWithDetails = ProblemSolved & {
+type SolvedProblemWithDetails = Pick<ProblemSolved, "id" | "createdAt"> & {
   problem: Pick<Problem, "slug" | "title">;
 };
 

@@ -17,26 +17,39 @@ export const metadata: Metadata = {
 const ProfilePage = async () => {
   const profileData = await getCurrentUserData();
 
-  if (!profileData || "error" in profileData) {
+  if (!profileData.success && profileData.error === "Unauthenticated") {
     redirect("/sign-in");
   }
+
+  if (!profileData.success) {
+    return (
+      <div className="container mx-auto min-h-screen max-w-7xl px-4 py-32">
+        <p role="alert" className="text-center text-destructive">
+          We couldn&apos;t load your profile. Please refresh the page or try
+          again later.
+        </p>
+      </div>
+    );
+  }
+
+  const userData = profileData.data;
 
   return (
     <div className="min-h-screen py-32">
       <div className="container mx-auto px-4 max-w-7xl">
-        <UserInfoCard userData={profileData} />
+        <UserInfoCard userData={userData} />
 
         <ProfileStats
-          submissions={profileData.submissions}
-          solvedCount={profileData.solvedProblems.length}
-          playlistCount={profileData.playlists.length}
+          submissions={userData.submissions}
+          solvedCount={userData.solvedProblems.length}
+          playlistCount={userData.playlists.length}
         />
 
-        <SubmissionHistory submissions={profileData.submissions} />
+        <SubmissionHistory submissions={userData.submissions} />
 
         <div className="grid gap-8">
-          <SolvedProblems solvedProblems={profileData.solvedProblems} />
-          <PlaylistSection playlists={profileData.playlists} />
+          <SolvedProblems solvedProblems={userData.solvedProblems} />
+          <PlaylistSection playlists={userData.playlists} />
         </div>
       </div>
     </div>

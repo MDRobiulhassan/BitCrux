@@ -4,9 +4,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CreateProblemForm } from "@/features/problems";
-import { getProblemById } from "@/features/problems/actions/get-problem";
+import { getProblemForAdmin } from "@/features/problems/actions/get-problem";
 import { toProblemFormValues } from "@/features/problems/utils/problem-form-values";
-import { requireAdmin } from "@/server/auth/require-admin";
 
 export const metadata: Metadata = {
   title: "Edit Problem",
@@ -19,14 +18,16 @@ export default async function EditProblemPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const access = await requireAdmin();
+  const { id } = await params;
+  const result = await getProblemForAdmin(id);
 
-  if (!access.authorized) {
-    redirect("/");
+  if (!result.success && result.error === "Unauthenticated") {
+    redirect("/sign-in");
   }
 
-  const { id } = await params;
-  const result = await getProblemById(id);
+  if (!result.success && result.error === "Unauthorized") {
+    redirect("/");
+  }
 
   if (!result.success || !result.data) {
     notFound();

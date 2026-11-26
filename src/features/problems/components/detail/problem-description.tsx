@@ -4,7 +4,7 @@ import { FileText } from "lucide-react";
 import { ExampleSection } from "./example-section";
 import { ConstraintsSection } from "./constraint-section";
 
-import type { Problem } from "@/generated/prisma/client";
+import type { PublicProblem } from "@/features/problems/types";
 
 type Example = {
   [key: string]: string | undefined;
@@ -14,7 +14,7 @@ type Example = {
 };
 
 interface ProblemDescriptionProps {
-  problem: Problem;
+  problem: PublicProblem;
 }
 
 function isExample(value: unknown): value is Example {

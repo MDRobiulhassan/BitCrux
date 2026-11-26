@@ -4,10 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, FileText, Lightbulb } from "lucide-react";
 import { SubmissionHistory, type Submission } from "@/features/submissions";
-import type { Problem } from "@/generated/prisma/client";
+import type { PublicProblem } from "@/features/problems/types";
 
 interface ProblemTabsProps {
-  problem: Problem;
+  problem: PublicProblem;
   submissionHistory: Submission[];
 }
 

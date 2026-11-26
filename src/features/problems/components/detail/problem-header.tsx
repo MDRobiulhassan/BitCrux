@@ -4,10 +4,10 @@ import { cn } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { getDifficultyColor } from "../../constants";
-import type { Problem } from "@/generated/prisma/client";
+import type { PublicProblem } from "@/features/problems/types";
 
 interface ProblemHeaderProps {
-  problem: Problem;
+  problem: PublicProblem;
 }
 
 export function ProblemHeader({ problem }: ProblemHeaderProps) {
